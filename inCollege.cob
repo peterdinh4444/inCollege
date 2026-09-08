@@ -41,13 +41,13 @@
             END-EVALUATE.
 
         JOB-SEARCH.
-            DISPLAY "Job search/internship is under construction."
+            DISPLAY "Job search/internship is under construction.".
         
         FIND-SOMEONE.
-            DISPLAY "Find someone you know is under construction."
+            DISPLAY "Find someone you know is under construction.".
         
         UNDER-CONSTRUCTION.
-            DISPLAY "This skill is under construction."
+            DISPLAY "This skill is under construction.".
 
 
         SKILL-MENU.
