@@ -210,8 +210,13 @@
            END-PERFORM.
 
        VALID-LOGIN-HANDOFF.
-      *>   Story 2 adds its success message and PERFORM POST-LOGIN-MENU here.
-           CONTINUE.
+            MOVE "You have successfully logged in" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+
+            MOVE "N" TO MAIN-MENU-DONE
+            PERFORM UNTIL MAIN-MENU-DONE = "Y"
+                PERFORM MAIN-MENU
+            END-PERFORM.
 
        LOAD-ACCOUNTS.
            OPEN INPUT ACCOUNT-FILE
@@ -250,20 +255,30 @@
                    PERFORM EMIT-LINE
            END-READ.
 
-       EMIT-LINE.
-           DISPLAY FUNCTION TRIM(OUTPUT-LINE TRAILING) END-DISPLAY
-           MOVE OUTPUT-LINE TO OUTPUT-RECORD
-           WRITE OUTPUT-RECORD END-WRITE
-           MOVE SPACES TO OUTPUT-LINE.
 
-        POST-LOGIN-MENU.
-            DISPLAY "1. Search for a job"
-            DISPLAY "2. Find someone you know"
-            DISPLAY "3. Learn a new skill"
-            DISPLAY "Logout"
-            DISPLAY "Enter your choice:"
 
-            ACCEPT CHOICE
+        MAIN-MENU.
+                            *>POST LOGIN NAVIGATION OPTIONS
+            MOVE "1. Search for a job" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            MOVE "2. Find someone you know" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            MOVE "3. Learn a new skill" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            MOVE "Logout" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            MOVE "Enter your choice:" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+
+            PERFORM READ-INPUT
+
+            IF NO-MORE-INPUT
+                MOVE "Y" TO MAIN-MENU-DONE
+                EXIT PARAGRAPH
+            END-IF
+
+            MOVE FUNCTION TRIM(INPUT-VALUE) TO CHOICE
+
 
             EVALUATE CHOICE
                 WHEN "1"
@@ -274,18 +289,23 @@
                     PERFORM SKILL-MENU
                 WHEN "Logout"
                     MOVE "Y" TO MAIN-MENU-DONE
+                    MOVE "Y" TO END-OF-INPUT
                 WHEN OTHER
-                    DISPLAY "Invalid Choice"
+                    MOVE "Invalid Choice" TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
             END-EVALUATE.
 
         JOB-SEARCH.
-            DISPLAY "Job search/internship is under construction.".
+            MOVE "Job search/internship is under construction." TO OUTPUT-LINE
+            PERFORM EMIT-LINE.
         
         FIND-SOMEONE.
-            DISPLAY "Find someone you know is under construction.".
+            MOVE "Find someone you know is under construction." TO OUTPUT-LINE
+            PERFORM EMIT-LINE.
         
         UNDER-CONSTRUCTION.
-            DISPLAY "This skill is under construction.".
+            MOVE "This skill is under construction." TO OUTPUT-LINE
+            PERFORM EMIT-LINE.
 
 
         SKILL-MENU.
@@ -293,34 +313,58 @@
 
             PERFORM UNTIL SKILL-MENU-DONE = "Y"
 
-                DISPLAY "Learn a New Skill:"
-                DISPLAY "Skill 1"
-                DISPLAY "Skill 2"
-                DISPLAY "Skill 3"
-                DISPLAY "Skill 4"
-                DISPLAY "Skill 5"
-                DISPLAY "Go Back"
-                DISPLAY "Enter your choice:"
-            
-                ACCEPT CHOICE
+                
+                MOVE "Learn a New Skill:" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                MOVE "Skill 1" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                MOVE "Skill 2" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                MOVE "Skill 3" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                MOVE "Skill 4" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                MOVE "Skill 5" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                MOVE "Go Back" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                MOVE "Enter your choice:" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
 
-                EVALUATE CHOICE
-                    WHEN "Skill 1"
-                        PERFORM UNDER-CONSTRUCTION
-                    WHEN "Skill 2"
-                        PERFORM UNDER-CONSTRUCTION
-                    WHEN "Skill 3"
-                        PERFORM UNDER-CONSTRUCTION
-                    WHEN "Skill 4"
-                        PERFORM UNDER-CONSTRUCTION
-                    WHEN "Skill 5"
-                        PERFORM UNDER-CONSTRUCTION
-                    WHEN "Go Back"
-                        MOVE "Y" TO SKILL-MENU-DONE
-                    WHEN OTHER
-                        DISPLAY "Invalid Choice"
-                END-EVALUATE
+                PERFORM READ-INPUT
 
+                IF NO-MORE-INPUT
+                    MOVE "Y" TO SKILL-MENU-DONE
+                ELSE
+                    MOVE FUNCTION TRIM(INPUT-VALUE) TO CHOICE
+                
+
+                    EVALUATE CHOICE
+                        WHEN "Skill 1"
+                            PERFORM UNDER-CONSTRUCTION
+                        WHEN "Skill 2"
+                            PERFORM UNDER-CONSTRUCTION
+                        WHEN "Skill 3"
+                            PERFORM UNDER-CONSTRUCTION
+                        WHEN "Skill 4"
+                            PERFORM UNDER-CONSTRUCTION
+                        WHEN "Skill 5"
+                            PERFORM UNDER-CONSTRUCTION
+                        WHEN "Go Back"
+                            MOVE "Y" TO SKILL-MENU-DONE
+                        WHEN OTHER
+                            MOVE "Invalid Choice" TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+                    END-EVALUATE
+                END-IF
             END-PERFORM.
+
+
+
+       EMIT-LINE.
+           DISPLAY FUNCTION TRIM(OUTPUT-LINE TRAILING) END-DISPLAY
+           MOVE OUTPUT-LINE TO OUTPUT-RECORD
+           WRITE OUTPUT-RECORD END-WRITE
+           MOVE SPACES TO OUTPUT-LINE.
 
 
