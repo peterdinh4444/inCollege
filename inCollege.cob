@@ -5,7 +5,7 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
+           SELECT INPUT-FILE ASSIGN TO "Epic1_TestCases/Epic1-Login-Positive-Test-Inputs/Epic1-Login-POS-12-Skill4.txt"
                ORGANIZATION IS LINE SEQUENTIAL FILE STATUS IS INPUT-STATUS.
            SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
@@ -258,6 +258,13 @@
 
 
         MAIN-MENU.
+            IF NO-MORE-INPUT
+                MOVE "Y" TO MAIN-MENU-DONE
+                EXIT PARAGRAPH
+            END-IF
+
+
+
                             *>POST LOGIN NAVIGATION OPTIONS
             MOVE "1. Search for a job" TO OUTPUT-LINE
             PERFORM EMIT-LINE
