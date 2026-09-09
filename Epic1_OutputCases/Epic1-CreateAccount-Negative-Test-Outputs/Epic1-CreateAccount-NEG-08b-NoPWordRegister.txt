@@ -1,0 +1,13 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+TU8
+Please enter your password:
+
+Password must be 8 to 12 characters and include a capital letter, a digit, and a special character.
+Log In
+Create New Account
+Enter your choice:

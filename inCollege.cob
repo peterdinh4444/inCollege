@@ -5,9 +5,9 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT INPUT-FILE ASSIGN TO "Epic1_TestCases/Epic1-Login-Positive-Test-Inputs/Epic1-Login-POS-12-Skill4.txt"
+           SELECT INPUT-FILE ASSIGN TO "Epic1_TestCases\Epic1-CreateAccount-Positive-Test-Inputs\Epic1-CreateAccount-POS-02-ValidCapacity-MaxChar.txt"
                ORGANIZATION IS LINE SEQUENTIAL FILE STATUS IS INPUT-STATUS.
-           SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
+           SELECT OUTPUT-FILE ASSIGN TO "Epic1-CreateAccount-POS-02-ValidCapacity-MaxChar.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
            SELECT ACCOUNT-FILE ASSIGN TO "InCollege-Accounts.dat"
                ORGANIZATION IS LINE SEQUENTIAL FILE STATUS IS ACCOUNT-STATUS.
