@@ -1,0 +1,13 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+TU2
+Please enter your password:
+Pa$$w0rd
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:

@@ -1,0 +1,16 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+TU5
+Please enter your password:
+LastPass01##
+Incorrect username/password, please try again
+Please enter your username:
+3
+Please enter your password:
+Skill 4
+Incorrect username/password, please try again
+Please enter your username:
