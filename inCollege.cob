@@ -15,9 +15,11 @@
        DATA DIVISION.
        FILE SECTION.
        FD  INPUT-FILE.
-       01  INPUT-RECORD                    PIC X(100).
+       01  INPUT-RECORD                    PIC X(200).
+
        FD  OUTPUT-FILE.
-       01  OUTPUT-RECORD                   PIC X(100).
+       01  OUTPUT-RECORD                   PIC X(200).
+
        FD  ACCOUNT-FILE.
        01  ACCOUNT-RECORD.
            05 FILE-USERNAME                PIC X(20).
@@ -28,10 +30,12 @@
        01  ACCOUNT-STATUS                  PIC XX.
        01  END-OF-INPUT                    PIC X VALUE "N".
            88 NO-MORE-INPUT                      VALUE "Y".
-       01  INPUT-VALUE                     PIC X(100).
-       01  OUTPUT-LINE                     PIC X(100).
+
+       01  INPUT-VALUE                     PIC X(200).
+       01  OUTPUT-LINE                     PIC X(200).
        01  CHOICE                          PIC X(20).
 
+       *> ACCOUNT / LOGIN VARIABLES
        01  NEW-USERNAME                    PIC X(20).
        01  NEW-PASSWORD                    PIC X(12).
        01  PASSWORD-LENGTH                 PIC 9(3).
@@ -50,6 +54,41 @@
            05 SAVED-USERNAME               PIC X(20).
            05 SAVED-PASSWORD               PIC X(12).
 
+       *> CURRENT LOGGED-IN USER
+       01  CURRENT-USERNAME                PIC X(20).
+
+       *> PROFILE INFORMATION
+       01  PROFILE-FIRST-NAME              PIC X(30).
+       01  PROFILE-LAST-NAME               PIC X(30).
+       01  PROFILE-UNIVERSITY              PIC X(50).
+       01  PROFILE-MAJOR                   PIC X(50).
+       01  PROFILE-GRAD-YEAR               PIC X(4).
+       01  PROFILE-ABOUT-ME                PIC X(200).
+
+       *> PROFILE STATE / VALIDATION
+       01  PROFILE-EXISTS                  PIC X VALUE "N".
+       01  GRAD-YEAR-VALID                 PIC X VALUE "N".
+
+       *> EXPERIENCE
+       01  EXPERIENCE-COUNT                PIC 9 VALUE ZERO.
+       01  EXPERIENCE-INDEX                PIC 9 VALUE ZERO.
+
+       01  EXPERIENCE-TABLE OCCURS 3 TIMES.
+           05 EXP-TITLE                    PIC X(50).
+           05 EXP-COMPANY                  PIC X(50).
+           05 EXP-DATES                    PIC X(30).
+           05 EXP-DESCRIPTION              PIC X(100).
+
+       *> EDUCATION
+       01  EDUCATION-COUNT                 PIC 9 VALUE ZERO.
+       01  EDUCATION-INDEX                 PIC 9 VALUE ZERO.
+
+       01  EDUCATION-TABLE OCCURS 3 TIMES.
+           05 EDU-DEGREE                   PIC X(50).
+           05 EDU-UNIVERSITY               PIC X(50).
+           05 EDU-YEARS                    PIC X(20).
+
+       *> MENU VARIABLES
        01  MAIN-MENU-DONE                  PIC X VALUE "N".
        01  SKILL-MENU-DONE                 PIC X VALUE "N".
 
@@ -260,7 +299,8 @@
 
 
 
-        MAIN-MENU.
+        
+       MAIN-MENU.
             IF NO-MORE-INPUT
                 MOVE "Y" TO MAIN-MENU-DONE
                 EXIT PARAGRAPH
