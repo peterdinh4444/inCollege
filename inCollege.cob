@@ -68,6 +68,8 @@
        *> PROFILE STATE / VALIDATION
        01  PROFILE-EXISTS                  PIC X VALUE "N".
        01  GRAD-YEAR-VALID                 PIC X VALUE "N".
+       01  GRAD-YEAR-LENGTH                PIC 9(3) VALUE ZERO.
+       01  GRAD-YEAR-INPUT                 PIC X(4).
 
        *> EXPERIENCE
        01  EXPERIENCE-COUNT                PIC 9 VALUE ZERO.
@@ -309,11 +311,15 @@
 
 
                             *>POST LOGIN NAVIGATION OPTIONS
-            MOVE "1. Search for a job" TO OUTPUT-LINE
+            MOVE "1. Create/Edit My Profile" TO OUTPUT-LINE
             PERFORM EMIT-LINE
-            MOVE "2. Find someone you know" TO OUTPUT-LINE
+            MOVE "2. View My Profile" TO OUTPUT-LINE
             PERFORM EMIT-LINE
-            MOVE "3. Learn a new skill" TO OUTPUT-LINE
+            MOVE "3. Search for a job" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            MOVE "4. Find someone you know" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            MOVE "5. Learn a new skill" TO OUTPUT-LINE
             PERFORM EMIT-LINE
             MOVE "Logout" TO OUTPUT-LINE
             PERFORM EMIT-LINE
@@ -332,10 +338,14 @@
 
             EVALUATE CHOICE
                 WHEN "1"
-                    PERFORM JOB-SEARCH
+                    PERFORM CREATE-EDIT-PROFILE
                 WHEN "2"
-                    PERFORM FIND-SOMEONE
+                    PERFORM VIEW-PROFILE
                 WHEN "3"
+                    PERFORM JOB-SEARCH
+                WHEN "4"
+                    PERFORM FIND-SOMEONE
+                WHEN "5"
                     PERFORM SKILL-MENU
                 WHEN "Logout"
                     MOVE "Y" TO MAIN-MENU-DONE
@@ -345,6 +355,154 @@
                     PERFORM EMIT-LINE
             END-EVALUATE.
 
+        CREATE-EDIT-PROFILE.
+            PERFORM GET-BASIC-PROFILE-INFORMATION
+            PERFORM GET-ABOUT-ME
+            PERFORM GET-EXPERIENCE
+            PERFORM GET-EDUCATION
+            PERFORM SAVE-PROFILE.
+
+            GET-BASIC-PROFILE-INFORMATION.
+                MOVE SPACES TO PROFILE-FIRST-NAME
+                MOVE SPACES TO PROFILE-LAST-NAME
+                MOVE SPACES TO PROFILE-UNIVERSITY
+                MOVE SPACES TO PROFILE-MAJOR
+                MOVE "N" TO GRAD-YEAR-VALID
+
+                PERFORM UNTIL PROFILE-FIRST-NAME NOT = SPACES
+                    MOVE "Enter First Name: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-FIRST-NAME
+                    
+                    IF PROFILE-FIRST-NAME = SPACES
+                        MOVE "First name is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM
+
+                PERFORM UNTIL PROFILE-LAST-NAME NOT = SPACES
+                    MOVE "Enter Last Name: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-LAST-NAME
+                    
+                    IF PROFILE-LAST-NAME = SPACES
+                        MOVE "Last name is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM
+
+                PERFORM UNTIL PROFILE-UNIVERSITY NOT = SPACES
+                    MOVE "Enter University/College Attended: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-UNIVERSITY
+                    
+                    IF PROFILE-UNIVERSITY = SPACES
+                        MOVE "University/College is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM
+
+                PERFORM UNTIL PROFILE-MAJOR NOT = SPACES
+                    MOVE "Enter Major: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-MAJOR
+
+                    IF PROFILE-MAJOR = SPACES
+                        MOVE "Major is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM.
+
+                PERFORM UNTIL GRAD-YEAR-VALID = "Y"
+
+                    MOVE "Enter Graduation Year (YYYY): " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    IF FUNCTION LENGTH(FUNCTION TRIM(INPUT-VALUE)) NOT = 4
+                        MOVE "Graduation year must be 4 digits." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+
+                    ELSE
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO GRAD-YEAR-INPUT
+
+                        IF GRAD-YEAR-INPUT IS NOT NUMERIC
+                            MOVE "Graduation year must be numeric." TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+
+                        ELSE
+                            IF GRAD-YEAR-INPUT > "2025"
+                            AND GRAD-YEAR-INPUT < "2034"
+
+                                MOVE GRAD-YEAR-INPUT TO PROFILE-GRAD-YEAR
+                                MOVE "Y" TO GRAD-YEAR-VALID
+
+                            ELSE
+                                MOVE "Graduation year must be between 2026 and 2033."
+                                    TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-IF
+                    END-IF
+
+                END-PERFORM.
+
+            GET-ABOUT-ME.
+                MOVE SPACES TO PROFILE-ABOUT-ME
+
+                MOVE "Enter About Me (optional, max 200 chars, enter blank line to skip): "
+                    TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+
+                PERFORM READ-INPUT
+                IF NO-MORE-INPUT
+                    EXIT PARAGRAPH
+                END-IF
+
+                MOVE FUNCTION TRIM(INPUT-VALUE)
+                    TO PROFILE-ABOUT-ME.
+                
+
+            GET-EXPERIENCE.
+                CONTINUE.
+
+            
+        VIEW-PROFILE. 
+
+
         JOB-SEARCH.
             MOVE "Job search/internship is under construction." TO OUTPUT-LINE
             PERFORM EMIT-LINE.
@@ -353,11 +511,6 @@
             MOVE "Find someone you know is under construction." TO OUTPUT-LINE
             PERFORM EMIT-LINE.
         
-        UNDER-CONSTRUCTION.
-            MOVE "This skill is under construction." TO OUTPUT-LINE
-            PERFORM EMIT-LINE.
-
-
         SKILL-MENU.
             MOVE "N" TO SKILL-MENU-DONE
 
@@ -409,7 +562,9 @@
                 END-IF
             END-PERFORM.
 
-
+        UNDER-CONSTRUCTION.
+            MOVE "This skill is under construction." TO OUTPUT-LINE
+            PERFORM EMIT-LINE.
 
        EMIT-LINE.
            DISPLAY FUNCTION TRIM(OUTPUT-LINE TRAILING) END-DISPLAY
