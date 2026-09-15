@@ -5,12 +5,14 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT INPUT-FILE ASSIGN TO "Epic1_TestCases\Epic1-CreateAccount-Positive-Test-Inputs\Epic1-CreateAccount-POS-02-ValidCapacity-MaxChar.txt"
+           SELECT INPUT-FILE ASSIGN TO "Change input file here"
                ORGANIZATION IS LINE SEQUENTIAL FILE STATUS IS INPUT-STATUS.
-           SELECT OUTPUT-FILE ASSIGN TO "Epic1-CreateAccount-POS-02-ValidCapacity-MaxChar.txt"
+           SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
            SELECT ACCOUNT-FILE ASSIGN TO "InCollege-Accounts.dat"
                ORGANIZATION IS LINE SEQUENTIAL FILE STATUS IS ACCOUNT-STATUS.
+           SELECT PROFILE-FILE ASSIGN TO "InCollege-Profiles.dat"
+               ORGANIZATION IS LINE SEQUENTIAL FILE STATUS IS PROFILE-STATUS.
 
        DATA DIVISION.
        FILE SECTION.
@@ -25,11 +27,34 @@
            05 FILE-USERNAME                PIC X(20).
            05 FILE-PASSWORD                PIC X(12).
 
+       FD  PROFILE-FILE.
+       01  PROFILE-RECORD.
+           05 FILE-PROFILE-USERNAME        PIC X(20).
+           05 FILE-PROFILE-FIRST-NAME      PIC X(30).
+           05 FILE-PROFILE-LAST-NAME       PIC X(30).
+           05 FILE-PROFILE-UNIVERSITY      PIC X(50).
+           05 FILE-PROFILE-MAJOR           PIC X(50).
+           05 FILE-PROFILE-GRAD-YEAR       PIC X(4).
+           05 FILE-PROFILE-ABOUT-ME        PIC X(200).
+           05 FILE-EXPERIENCE-COUNT        PIC 9.
+           05 FILE-EXPERIENCE-TABLE OCCURS 3 TIMES.
+               10 FILE-EXP-TITLE           PIC X(50).
+               10 FILE-EXP-COMPANY         PIC X(50).
+               10 FILE-EXP-DATES           PIC X(30).
+               10 FILE-EXP-DESCRIPTION     PIC X(100).
+           05 FILE-EDUCATION-COUNT         PIC 9.
+           05 FILE-EDUCATION-TABLE OCCURS 3 TIMES.
+               10 FILE-EDU-DEGREE          PIC X(50).
+               10 FILE-EDU-UNIVERSITY      PIC X(50).
+               10 FILE-EDU-YEARS           PIC X(20).
+
        WORKING-STORAGE SECTION.
        01  INPUT-STATUS                    PIC XX.
        01  ACCOUNT-STATUS                  PIC XX.
+       01  PROFILE-STATUS                  PIC XX.
        01  END-OF-INPUT                    PIC X VALUE "N".
            88 NO-MORE-INPUT                      VALUE "Y".
+       01  PROFILE-EOF                     PIC X VALUE "N".
 
        01  INPUT-VALUE                     PIC X(200).
        01  OUTPUT-LINE                     PIC X(200).
@@ -258,12 +283,16 @@
                IF NEW-USERNAME = SAVED-USERNAME(ACCOUNT-INDEX)
                    AND NEW-PASSWORD = SAVED-PASSWORD(ACCOUNT-INDEX)
                    MOVE "Y" TO LOGIN-MATCHED
+                   MOVE SAVED-USERNAME(ACCOUNT-INDEX) TO CURRENT-USERNAME
                END-IF
            END-PERFORM.
 
        VALID-LOGIN-HANDOFF.
             MOVE "You have successfully logged in" TO OUTPUT-LINE
             PERFORM EMIT-LINE
+
+            PERFORM CLEAR-PROFILE
+            PERFORM LOAD-PROFILE
 
             MOVE "N" TO MAIN-MENU-DONE
             PERFORM UNTIL MAIN-MENU-DONE = "Y"
@@ -601,13 +630,351 @@
                 END-PERFORM.
 
             GET-EDUCATION.
-                CONTINUE.
+                MOVE 0 TO EDUCATION-COUNT
+
+                PERFORM UNTIL EDUCATION-COUNT = 3
+                    MOVE "Education Degree (enter 'DONE' to finish): "
+                        TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    IF FUNCTION UPPER-CASE(FUNCTION TRIM(INPUT-VALUE)) = "DONE"
+                        EXIT PERFORM
+                    END-IF
+
+                    IF FUNCTION TRIM(INPUT-VALUE) = SPACES
+                        MOVE "Degree is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    ELSE
+                        ADD 1 TO EDUCATION-COUNT
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO EDU-DEGREE(EDUCATION-COUNT)
+
+                        MOVE SPACES TO EDU-UNIVERSITY(EDUCATION-COUNT)
+                        PERFORM UNTIL EDU-UNIVERSITY(EDUCATION-COUNT)
+                            NOT = SPACES
+
+                            MOVE "University/College: " TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+                            PERFORM READ-INPUT
+                            IF NO-MORE-INPUT
+                                EXIT PARAGRAPH
+                            END-IF
+
+                            MOVE FUNCTION TRIM(INPUT-VALUE)
+                                TO EDU-UNIVERSITY(EDUCATION-COUNT)
+
+                            IF EDU-UNIVERSITY(EDUCATION-COUNT) = SPACES
+                                MOVE "University/College is required."
+                                    TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-PERFORM
+
+                        MOVE SPACES TO EDU-YEARS(EDUCATION-COUNT)
+                        PERFORM UNTIL EDU-YEARS(EDUCATION-COUNT) NOT = SPACES
+                            MOVE "Years Attended: " TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+                            PERFORM READ-INPUT
+                            IF NO-MORE-INPUT
+                                EXIT PARAGRAPH
+                            END-IF
+
+                            MOVE FUNCTION TRIM(INPUT-VALUE)
+                                TO EDU-YEARS(EDUCATION-COUNT)
+
+                            IF EDU-YEARS(EDUCATION-COUNT) = SPACES
+                                MOVE "Years attended are required."
+                                    TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-PERFORM
+                    END-IF
+                END-PERFORM.
 
             SAVE-PROFILE.
-                CONTINUE.
+                PERFORM BUILD-PROFILE-RECORD
+
+                OPEN EXTEND PROFILE-FILE
+                IF PROFILE-STATUS = "35"
+                    OPEN OUTPUT PROFILE-FILE
+                END-IF
+
+                IF PROFILE-STATUS NOT = "00"
+                    MOVE "Unable to save profile." TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+                    EXIT PARAGRAPH
+                END-IF
+
+                WRITE PROFILE-RECORD
+                CLOSE PROFILE-FILE
+
+                MOVE "Y" TO PROFILE-EXISTS
+                MOVE "Profile saved successfully!" TO OUTPUT-LINE
+                PERFORM EMIT-LINE.
+
+                BUILD-PROFILE-RECORD.
+                    INITIALIZE PROFILE-RECORD
+                    MOVE CURRENT-USERNAME TO FILE-PROFILE-USERNAME
+                    MOVE PROFILE-FIRST-NAME TO FILE-PROFILE-FIRST-NAME
+                    MOVE PROFILE-LAST-NAME TO FILE-PROFILE-LAST-NAME
+                    MOVE PROFILE-UNIVERSITY TO FILE-PROFILE-UNIVERSITY
+                    MOVE PROFILE-MAJOR TO FILE-PROFILE-MAJOR
+                    MOVE PROFILE-GRAD-YEAR TO FILE-PROFILE-GRAD-YEAR
+                    MOVE PROFILE-ABOUT-ME TO FILE-PROFILE-ABOUT-ME
+                    MOVE EXPERIENCE-COUNT TO FILE-EXPERIENCE-COUNT
+
+                    PERFORM VARYING EXPERIENCE-INDEX FROM 1 BY 1
+                        UNTIL EXPERIENCE-INDEX > EXPERIENCE-COUNT
+                        MOVE EXP-TITLE(EXPERIENCE-INDEX)
+                            TO FILE-EXP-TITLE(EXPERIENCE-INDEX)
+                        MOVE EXP-COMPANY(EXPERIENCE-INDEX)
+                            TO FILE-EXP-COMPANY(EXPERIENCE-INDEX)
+                        MOVE EXP-DATES(EXPERIENCE-INDEX)
+                            TO FILE-EXP-DATES(EXPERIENCE-INDEX)
+                        MOVE EXP-DESCRIPTION(EXPERIENCE-INDEX)
+                            TO FILE-EXP-DESCRIPTION(EXPERIENCE-INDEX)
+                    END-PERFORM
+
+                    MOVE EDUCATION-COUNT TO FILE-EDUCATION-COUNT
+                    PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
+                        UNTIL EDUCATION-INDEX > EDUCATION-COUNT
+                        MOVE EDU-DEGREE(EDUCATION-INDEX)
+                            TO FILE-EDU-DEGREE(EDUCATION-INDEX)
+                        MOVE EDU-UNIVERSITY(EDUCATION-INDEX)
+                            TO FILE-EDU-UNIVERSITY(EDUCATION-INDEX)
+                        MOVE EDU-YEARS(EDUCATION-INDEX)
+                            TO FILE-EDU-YEARS(EDUCATION-INDEX)
+                    END-PERFORM.
+
+                CLEAR-PROFILE.
+                    MOVE SPACES TO PROFILE-FIRST-NAME
+                    MOVE SPACES TO PROFILE-LAST-NAME
+                    MOVE SPACES TO PROFILE-UNIVERSITY
+                    MOVE SPACES TO PROFILE-MAJOR
+                    MOVE SPACES TO PROFILE-GRAD-YEAR
+                    MOVE SPACES TO PROFILE-ABOUT-ME
+                    MOVE 0 TO EXPERIENCE-COUNT EDUCATION-COUNT
+                    MOVE "N" TO PROFILE-EXISTS
+
+                    PERFORM VARYING EXPERIENCE-INDEX FROM 1 BY 1
+                        UNTIL EXPERIENCE-INDEX > 3
+                        INITIALIZE EXPERIENCE-TABLE(EXPERIENCE-INDEX)
+                    END-PERFORM
+
+                    PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
+                        UNTIL EDUCATION-INDEX > 3
+                        INITIALIZE EDUCATION-TABLE(EDUCATION-INDEX)
+                    END-PERFORM.
+
+                LOAD-PROFILE.
+                    MOVE "N" TO PROFILE-EOF
+                    OPEN INPUT PROFILE-FILE
+
+                    IF PROFILE-STATUS = "35"
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    IF PROFILE-STATUS NOT = "00"
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    PERFORM UNTIL PROFILE-EOF = "Y"
+                        READ PROFILE-FILE
+                            AT END
+                                MOVE "Y" TO PROFILE-EOF
+                            NOT AT END
+                                IF FILE-PROFILE-USERNAME = CURRENT-USERNAME
+                                    PERFORM COPY-FILE-PROFILE
+                                    MOVE "Y" TO PROFILE-EXISTS
+                                END-IF
+                        END-READ
+                    END-PERFORM
+
+                    CLOSE PROFILE-FILE.
+
+                COPY-FILE-PROFILE.
+                    MOVE FILE-PROFILE-FIRST-NAME TO PROFILE-FIRST-NAME
+                    MOVE FILE-PROFILE-LAST-NAME TO PROFILE-LAST-NAME
+                    MOVE FILE-PROFILE-UNIVERSITY TO PROFILE-UNIVERSITY
+                    MOVE FILE-PROFILE-MAJOR TO PROFILE-MAJOR
+                    MOVE FILE-PROFILE-GRAD-YEAR TO PROFILE-GRAD-YEAR
+                    MOVE FILE-PROFILE-ABOUT-ME TO PROFILE-ABOUT-ME
+                    MOVE FILE-EXPERIENCE-COUNT TO EXPERIENCE-COUNT
+                    MOVE FILE-EDUCATION-COUNT TO EDUCATION-COUNT
+
+                    PERFORM VARYING EXPERIENCE-INDEX FROM 1 BY 1
+                        UNTIL EXPERIENCE-INDEX > 3
+                        INITIALIZE EXPERIENCE-TABLE(EXPERIENCE-INDEX)
+                    END-PERFORM
+
+                    PERFORM VARYING EXPERIENCE-INDEX FROM 1 BY 1
+                        UNTIL EXPERIENCE-INDEX > EXPERIENCE-COUNT
+                        MOVE FILE-EXP-TITLE(EXPERIENCE-INDEX)
+                            TO EXP-TITLE(EXPERIENCE-INDEX)
+                        MOVE FILE-EXP-COMPANY(EXPERIENCE-INDEX)
+                            TO EXP-COMPANY(EXPERIENCE-INDEX)
+                        MOVE FILE-EXP-DATES(EXPERIENCE-INDEX)
+                            TO EXP-DATES(EXPERIENCE-INDEX)
+                        MOVE FILE-EXP-DESCRIPTION(EXPERIENCE-INDEX)
+                            TO EXP-DESCRIPTION(EXPERIENCE-INDEX)
+                    END-PERFORM
+
+                    PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
+                        UNTIL EDUCATION-INDEX > 3
+                        INITIALIZE EDUCATION-TABLE(EDUCATION-INDEX)
+                    END-PERFORM
+
+                    PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
+                        UNTIL EDUCATION-INDEX > EDUCATION-COUNT
+                        MOVE FILE-EDU-DEGREE(EDUCATION-INDEX)
+                            TO EDU-DEGREE(EDUCATION-INDEX)
+                        MOVE FILE-EDU-UNIVERSITY(EDUCATION-INDEX)
+                            TO EDU-UNIVERSITY(EDUCATION-INDEX)
+                        MOVE FILE-EDU-YEARS(EDUCATION-INDEX)
+                            TO EDU-YEARS(EDUCATION-INDEX)
+                    END-PERFORM.
     
-        VIEW-PROFILE. 
-            CONTINUE.
+        VIEW-PROFILE.
+            IF PROFILE-EXISTS NOT = "Y"
+                MOVE "No profile has been created yet." TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                EXIT PARAGRAPH
+            END-IF
+
+            MOVE "--- Your Profile ---" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+
+            MOVE SPACES TO OUTPUT-LINE
+            STRING
+                "Name: " DELIMITED BY SIZE
+                FUNCTION TRIM(PROFILE-FIRST-NAME) DELIMITED BY SIZE
+                " " DELIMITED BY SIZE
+                FUNCTION TRIM(PROFILE-LAST-NAME) DELIMITED BY SIZE
+                INTO OUTPUT-LINE
+            END-STRING
+            PERFORM EMIT-LINE
+
+            MOVE SPACES TO OUTPUT-LINE
+            STRING
+                "University: " DELIMITED BY SIZE
+                FUNCTION TRIM(PROFILE-UNIVERSITY) DELIMITED BY SIZE
+                INTO OUTPUT-LINE
+            END-STRING
+            PERFORM EMIT-LINE
+
+            MOVE SPACES TO OUTPUT-LINE
+            STRING
+                "Major: " DELIMITED BY SIZE
+                FUNCTION TRIM(PROFILE-MAJOR) DELIMITED BY SIZE
+                INTO OUTPUT-LINE
+            END-STRING
+            PERFORM EMIT-LINE
+
+            MOVE SPACES TO OUTPUT-LINE
+            STRING
+                "Graduation Year: " DELIMITED BY SIZE
+                PROFILE-GRAD-YEAR DELIMITED BY SIZE
+                INTO OUTPUT-LINE
+            END-STRING
+            PERFORM EMIT-LINE
+
+            MOVE "About Me:" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            MOVE PROFILE-ABOUT-ME TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+
+            MOVE "Experience:" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            IF EXPERIENCE-COUNT = 0
+                MOVE "None" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+            ELSE
+                PERFORM VARYING EXPERIENCE-INDEX FROM 1 BY 1
+                    UNTIL EXPERIENCE-INDEX > EXPERIENCE-COUNT
+
+                    MOVE SPACES TO OUTPUT-LINE
+                    STRING
+                        "Title: " DELIMITED BY SIZE
+                        FUNCTION TRIM(EXP-TITLE(EXPERIENCE-INDEX))
+                            DELIMITED BY SIZE
+                        INTO OUTPUT-LINE
+                    END-STRING
+                    PERFORM EMIT-LINE
+
+                    MOVE SPACES TO OUTPUT-LINE
+                    STRING
+                        "Company: " DELIMITED BY SIZE
+                        FUNCTION TRIM(EXP-COMPANY(EXPERIENCE-INDEX))
+                            DELIMITED BY SIZE
+                        INTO OUTPUT-LINE
+                    END-STRING
+                    PERFORM EMIT-LINE
+
+                    MOVE SPACES TO OUTPUT-LINE
+                    STRING
+                        "Dates: " DELIMITED BY SIZE
+                        FUNCTION TRIM(EXP-DATES(EXPERIENCE-INDEX))
+                            DELIMITED BY SIZE
+                        INTO OUTPUT-LINE
+                    END-STRING
+                    PERFORM EMIT-LINE
+
+                    MOVE SPACES TO OUTPUT-LINE
+                    STRING
+                        "Description: " DELIMITED BY SIZE
+                        FUNCTION TRIM(EXP-DESCRIPTION(EXPERIENCE-INDEX))
+                            DELIMITED BY SIZE
+                        INTO OUTPUT-LINE
+                    END-STRING
+                    PERFORM EMIT-LINE
+                END-PERFORM
+            END-IF
+
+            MOVE "Education:" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+            IF EDUCATION-COUNT = 0
+                MOVE "None" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+            ELSE
+                PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
+                    UNTIL EDUCATION-INDEX > EDUCATION-COUNT
+
+                    MOVE SPACES TO OUTPUT-LINE
+                    STRING
+                        "Degree: " DELIMITED BY SIZE
+                        FUNCTION TRIM(EDU-DEGREE(EDUCATION-INDEX))
+                            DELIMITED BY SIZE
+                        INTO OUTPUT-LINE
+                    END-STRING
+                    PERFORM EMIT-LINE
+
+                    MOVE SPACES TO OUTPUT-LINE
+                    STRING
+                        "University: " DELIMITED BY SIZE
+                        FUNCTION TRIM(EDU-UNIVERSITY(EDUCATION-INDEX))
+                            DELIMITED BY SIZE
+                        INTO OUTPUT-LINE
+                    END-STRING
+                    PERFORM EMIT-LINE
+
+                    MOVE SPACES TO OUTPUT-LINE
+                    STRING
+                        "Years: " DELIMITED BY SIZE
+                        FUNCTION TRIM(EDU-YEARS(EDUCATION-INDEX))
+                            DELIMITED BY SIZE
+                        INTO OUTPUT-LINE
+                    END-STRING
+                    PERFORM EMIT-LINE
+                END-PERFORM
+            END-IF
+
+            MOVE "--------------------" TO OUTPUT-LINE
+            PERFORM EMIT-LINE.
     
         JOB-SEARCH.
             MOVE "Job search/internship is under construction." TO OUTPUT-LINE
