@@ -94,7 +94,14 @@
        01  MAIN-MENU-DONE                  PIC X VALUE "N".
        01  SKILL-MENU-DONE                 PIC X VALUE "N".
 
+
+
        PROCEDURE DIVISION.
+
+       *> ============================================================
+       *> PROGRAM ENTRY
+       *> ============================================================
+
        MAIN.
            OPEN OUTPUT OUTPUT-FILE
            OPEN INPUT INPUT-FILE
@@ -114,6 +121,10 @@
 
            CLOSE INPUT-FILE OUTPUT-FILE
            STOP RUN.
+
+       *> ============================================================
+       *> ACCOUNT / LOGIN
+       *> ============================================================
 
        ENTRY-MENU.
            MOVE "Log In" TO OUTPUT-LINE PERFORM EMIT-LINE
@@ -259,6 +270,10 @@
                 PERFORM MAIN-MENU
             END-PERFORM.
 
+       *> ============================================================
+       *> FILE I/O
+       *> ============================================================
+
        LOAD-ACCOUNTS.
            OPEN INPUT ACCOUNT-FILE
            IF ACCOUNT-STATUS = "35"
@@ -299,8 +314,15 @@
                    PERFORM EMIT-LINE
            END-READ.
 
+       EMIT-LINE.
+           DISPLAY FUNCTION TRIM(OUTPUT-LINE TRAILING) END-DISPLAY
+           MOVE OUTPUT-LINE TO OUTPUT-RECORD
+           WRITE OUTPUT-RECORD END-WRITE
+           MOVE SPACES TO OUTPUT-LINE.
 
-
+       *> ============================================================
+       *> POST-LOGIN NAVIGATION
+       *> ============================================================
         
        MAIN-MENU.
             IF NO-MORE-INPUT
@@ -308,9 +330,6 @@
                 EXIT PARAGRAPH
             END-IF
 
-
-
-                            *>POST LOGIN NAVIGATION OPTIONS
             MOVE "1. Create/Edit My Profile" TO OUTPUT-LINE
             PERFORM EMIT-LINE
             MOVE "2. View My Profile" TO OUTPUT-LINE
@@ -362,7 +381,7 @@
             PERFORM GET-EDUCATION
             PERFORM SAVE-PROFILE.
 
-            GET-BASIC-PROFILE-INFORMATION.
+            GET-BASIC-PROFILE-INFORMATION
                 MOVE SPACES TO PROFILE-FIRST-NAME
                 MOVE SPACES TO PROFILE-LAST-NAME
                 MOVE SPACES TO PROFILE-UNIVERSITY
@@ -439,7 +458,7 @@
                         MOVE "Major is required." TO OUTPUT-LINE
                         PERFORM EMIT-LINE
                     END-IF
-                END-PERFORM.
+                END-PERFORM
 
                 PERFORM UNTIL GRAD-YEAR-VALID = "Y"
 
@@ -495,14 +514,101 @@
                 MOVE FUNCTION TRIM(INPUT-VALUE)
                     TO PROFILE-ABOUT-ME.
                 
-
             GET-EXPERIENCE.
+                MOVE 0 TO EXPERIENCE-COUNT
+
+                PERFORM UNTIL EXPERIENCE-COUNT = 3
+
+                    MOVE "Experience Title (enter 'DONE' to finish): "
+                        TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    IF FUNCTION UPPER-CASE(FUNCTION TRIM(INPUT-VALUE)) = "DONE"
+                        EXIT PERFORM
+                    END-IF
+
+                    IF FUNCTION TRIM(INPUT-VALUE) = SPACES
+                        MOVE "Experience title is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    ELSE
+                        ADD 1 TO EXPERIENCE-COUNT
+
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO EXP-TITLE(EXPERIENCE-COUNT)
+
+                        MOVE SPACES TO EXP-COMPANY(EXPERIENCE-COUNT)
+
+                        PERFORM UNTIL EXP-COMPANY(EXPERIENCE-COUNT) NOT = SPACES
+
+                            MOVE "Company/Organization: " TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+
+                            PERFORM READ-INPUT
+                            IF NO-MORE-INPUT
+                                EXIT PARAGRAPH
+                            END-IF
+
+                            MOVE FUNCTION TRIM(INPUT-VALUE)
+                                TO EXP-COMPANY(EXPERIENCE-COUNT)
+
+                            IF EXP-COMPANY(EXPERIENCE-COUNT) = SPACES
+                                MOVE "Company/Organization is required."
+                                    TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-PERFORM
+
+                        MOVE SPACES TO EXP-DATES(EXPERIENCE-COUNT)
+
+                        PERFORM UNTIL EXP-DATES(EXPERIENCE-COUNT) NOT = SPACES
+
+                            MOVE "Dates: " TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+
+                            PERFORM READ-INPUT
+                            IF NO-MORE-INPUT
+                                EXIT PARAGRAPH
+                            END-IF
+
+                            MOVE FUNCTION TRIM(INPUT-VALUE)
+                                TO EXP-DATES(EXPERIENCE-COUNT)
+
+                            IF EXP-DATES(EXPERIENCE-COUNT) = SPACES
+                                MOVE "Dates are required." TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-PERFORM
+
+                        MOVE "Description (optional, blank to skip): "
+                            TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+
+                        PERFORM READ-INPUT
+                        IF NO-MORE-INPUT
+                            EXIT PARAGRAPH
+                        END-IF
+
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO EXP-DESCRIPTION(EXPERIENCE-COUNT)
+
+                    END-IF
+
+                END-PERFORM.
+
+            GET-EDUCATION.
                 CONTINUE.
 
-            
+            SAVE-PROFILE.
+                CONTINUE.
+    
         VIEW-PROFILE. 
-
-
+            CONTINUE.
+    
         JOB-SEARCH.
             MOVE "Job search/internship is under construction." TO OUTPUT-LINE
             PERFORM EMIT-LINE.
@@ -562,14 +668,16 @@
                 END-IF
             END-PERFORM.
 
-        UNDER-CONSTRUCTION.
-            MOVE "This skill is under construction." TO OUTPUT-LINE
-            PERFORM EMIT-LINE.
+            UNDER-CONSTRUCTION.
+                MOVE "This skill is under construction." TO OUTPUT-LINE
+                PERFORM EMIT-LINE.
 
-       EMIT-LINE.
-           DISPLAY FUNCTION TRIM(OUTPUT-LINE TRAILING) END-DISPLAY
-           MOVE OUTPUT-LINE TO OUTPUT-RECORD
-           WRITE OUTPUT-RECORD END-WRITE
-           MOVE SPACES TO OUTPUT-LINE.
+
+
+
+
+
+
+
 
 
