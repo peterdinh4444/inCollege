@@ -44,6 +44,6 @@ The program writes its results to:
 
 This output file is created in the project folder, alongside `inCollege.cob` and `inCollege.exe`. The file is overwritten each time the program starts.
 
-##Profile Creation
+## Profile Creation
 
 Users can now log in to create, edit, and view profiles. Users can also add experience, and multiple education entries.
