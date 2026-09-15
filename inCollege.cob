@@ -11,14 +11,6 @@
                ORGANIZATION IS LINE SEQUENTIAL.
            SELECT ACCOUNT-FILE ASSIGN TO "InCollege-Accounts.dat"
                ORGANIZATION IS LINE SEQUENTIAL FILE STATUS IS ACCOUNT-STATUS.
-           SELECT PROFILE-FILE ASSIGN TO "InCollege-Profiles.dat"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS PROFILE-STATUS.
-           SELECT TEMP-PROFILE-FILE ASSIGN TO "InCollege-Profiles.tmp"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS TEMP-PROFILE-STATUS.
-
-
 
        DATA DIVISION.
        FILE SECTION.
@@ -33,40 +25,9 @@
            05 FILE-USERNAME                PIC X(20).
            05 FILE-PASSWORD                PIC X(12).
 
-       FD  PROFILE-FILE.
-       01  PROFILE-RECORD.
-           05 FILE-PROFILE-USERNAME       PIC X(20).
-           05 FILE-FIRST-NAME             PIC X(30).
-           05 FILE-LAST-NAME              PIC X(30).
-           05 FILE-UNIVERSITY             PIC X(50).
-           05 FILE-MAJOR                  PIC X(50).
-           05 FILE-GRAD-YEAR              PIC X(4).
-           05 FILE-ABOUT-ME               PIC X(200).
-           05 FILE-EDUCATION-COUNT        PIC 9.
-           05 FILE-EDUCATION-TABLE OCCURS 3 TIMES.
-               10 FILE-EDU-DEGREE         PIC X(50).
-               10 FILE-EDU-UNIVERSITY     PIC X(50).
-               10 FILE-EDU-YEARS          PIC X(20).
-       FD  TEMP-PROFILE-FILE.
-       01  TEMP-PROFILE-RECORD.
-           05 TEMP-PROFILE-USERNAME       PIC X(20).
-           05 TEMP-FIRST-NAME             PIC X(30).
-           05 TEMP-LAST-NAME              PIC X(30).
-           05 TEMP-UNIVERSITY             PIC X(50).
-           05 TEMP-MAJOR                  PIC X(50).
-           05 TEMP-GRAD-YEAR              PIC X(4).
-           05 TEMP-ABOUT-ME               PIC X(200).
-           05 TEMP-EDUCATION-COUNT        PIC 9.
-           05 TEMP-EDUCATION-TABLE OCCURS 3 TIMES.
-               10 TEMP-EDU-DEGREE         PIC X(50).
-               10 TEMP-EDU-UNIVERSITY     PIC X(50).
-               10 TEMP-EDU-YEARS          PIC X(20).
-
-
        WORKING-STORAGE SECTION.
        01  INPUT-STATUS                    PIC XX.
        01  ACCOUNT-STATUS                  PIC XX.
-       01  PROFILE-STATUS                 PIC XX.
        01  END-OF-INPUT                    PIC X VALUE "N".
            88 NO-MORE-INPUT                      VALUE "Y".
 
@@ -107,6 +68,8 @@
        *> PROFILE STATE / VALIDATION
        01  PROFILE-EXISTS                  PIC X VALUE "N".
        01  GRAD-YEAR-VALID                 PIC X VALUE "N".
+       01  GRAD-YEAR-LENGTH                PIC 9(3) VALUE ZERO.
+       01  GRAD-YEAR-INPUT                 PIC X(4).
 
        *> EXPERIENCE
        01  EXPERIENCE-COUNT                PIC 9 VALUE ZERO.
@@ -131,19 +94,14 @@
        01  MAIN-MENU-DONE                  PIC X VALUE "N".
        01  SKILL-MENU-DONE                 PIC X VALUE "N".
 
-       01  TEMP-PROFILE-STATUS             PIC XX.
-       01  PROFILE-FOUND                   PIC X VALUE "N".
-
-       01  PROFILE-EOF                    PIC X VALUE "N".
-           88 NO-MORE-PROFILES                  VALUE "Y".
-
-       01  TEMP-PROFILE-EOF               PIC X VALUE "N".
-           88 NO-MORE-TEMP-PROFILES            VALUE "Y".
-
-
 
 
        PROCEDURE DIVISION.
+
+       *> ============================================================
+       *> PROGRAM ENTRY
+       *> ============================================================
+
        MAIN.
            OPEN OUTPUT OUTPUT-FILE
            OPEN INPUT INPUT-FILE
@@ -163,6 +121,10 @@
 
            CLOSE INPUT-FILE OUTPUT-FILE
            STOP RUN.
+
+       *> ============================================================
+       *> ACCOUNT / LOGIN
+       *> ============================================================
 
        ENTRY-MENU.
            MOVE "Log In" TO OUTPUT-LINE PERFORM EMIT-LINE
@@ -296,7 +258,6 @@
                IF NEW-USERNAME = SAVED-USERNAME(ACCOUNT-INDEX)
                    AND NEW-PASSWORD = SAVED-PASSWORD(ACCOUNT-INDEX)
                    MOVE "Y" TO LOGIN-MATCHED
-                   MOVE NEW-USERNAME TO CURRENT-USERNAME
                END-IF
            END-PERFORM.
 
@@ -304,12 +265,14 @@
             MOVE "You have successfully logged in" TO OUTPUT-LINE
             PERFORM EMIT-LINE
 
-            PERFORM LOAD-PROFILE
-
             MOVE "N" TO MAIN-MENU-DONE
             PERFORM UNTIL MAIN-MENU-DONE = "Y"
                 PERFORM MAIN-MENU
             END-PERFORM.
+
+       *> ============================================================
+       *> FILE I/O
+       *> ============================================================
 
        LOAD-ACCOUNTS.
            OPEN INPUT ACCOUNT-FILE
@@ -351,8 +314,15 @@
                    PERFORM EMIT-LINE
            END-READ.
 
+       EMIT-LINE.
+           DISPLAY FUNCTION TRIM(OUTPUT-LINE TRAILING) END-DISPLAY
+           MOVE OUTPUT-LINE TO OUTPUT-RECORD
+           WRITE OUTPUT-RECORD END-WRITE
+           MOVE SPACES TO OUTPUT-LINE.
 
-
+       *> ============================================================
+       *> POST-LOGIN NAVIGATION
+       *> ============================================================
         
        MAIN-MENU.
             IF NO-MORE-INPUT
@@ -360,18 +330,15 @@
                 EXIT PARAGRAPH
             END-IF
 
-
-
-                            *>POST LOGIN NAVIGATION OPTIONS
-            MOVE "1. Search for a job" TO OUTPUT-LINE
+            MOVE "1. Create/Edit My Profile" TO OUTPUT-LINE
             PERFORM EMIT-LINE
-            MOVE "2. Find someone you know" TO OUTPUT-LINE
+            MOVE "2. View My Profile" TO OUTPUT-LINE
             PERFORM EMIT-LINE
-            MOVE "3. Learn a new skill" TO OUTPUT-LINE
+            MOVE "3. Search for a job" TO OUTPUT-LINE
             PERFORM EMIT-LINE
-            MOVE "4. Edit My Profile" TO OUTPUT-LINE
+            MOVE "4. Find someone you know" TO OUTPUT-LINE
             PERFORM EMIT-LINE
-            MOVE "5. View My Profile" TO OUTPUT-LINE
+            MOVE "5. Learn a new skill" TO OUTPUT-LINE
             PERFORM EMIT-LINE
             MOVE "Logout" TO OUTPUT-LINE
             PERFORM EMIT-LINE
@@ -390,15 +357,15 @@
 
             EVALUATE CHOICE
                 WHEN "1"
-                    PERFORM JOB-SEARCH
+                    PERFORM CREATE-EDIT-PROFILE
                 WHEN "2"
-                    PERFORM FIND-SOMEONE
-                WHEN "3"
-                    PERFORM SKILL-MENU
-                WHEN "4"
-                    PERFORM EDIT-PROFILE
-                WHEN "5"
                     PERFORM VIEW-PROFILE
+                WHEN "3"
+                    PERFORM JOB-SEARCH
+                WHEN "4"
+                    PERFORM FIND-SOMEONE
+                WHEN "5"
+                    PERFORM SKILL-MENU
                 WHEN "Logout"
                     MOVE "Y" TO MAIN-MENU-DONE
                     MOVE "Y" TO END-OF-INPUT
@@ -407,6 +374,469 @@
                     PERFORM EMIT-LINE
             END-EVALUATE.
 
+        CREATE-EDIT-PROFILE.
+            PERFORM GET-BASIC-PROFILE-INFORMATION
+            PERFORM GET-ABOUT-ME
+            PERFORM GET-EXPERIENCE
+            PERFORM GET-EDUCATION
+            PERFORM SAVE-PROFILE.
+
+            GET-BASIC-PROFILE-INFORMATION.
+                MOVE SPACES TO PROFILE-FIRST-NAME
+                MOVE SPACES TO PROFILE-LAST-NAME
+                MOVE SPACES TO PROFILE-UNIVERSITY
+                MOVE SPACES TO PROFILE-MAJOR
+                MOVE "N" TO GRAD-YEAR-VALID
+
+                PERFORM UNTIL PROFILE-FIRST-NAME NOT = SPACES
+                    MOVE "Enter First Name: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-FIRST-NAME
+                    
+                    IF PROFILE-FIRST-NAME = SPACES
+                        MOVE "First name is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM
+
+                PERFORM UNTIL PROFILE-LAST-NAME NOT = SPACES
+                    MOVE "Enter Last Name: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-LAST-NAME
+                    
+                    IF PROFILE-LAST-NAME = SPACES
+                        MOVE "Last name is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM
+
+                PERFORM UNTIL PROFILE-UNIVERSITY NOT = SPACES
+                    MOVE "Enter University/College Attended: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-UNIVERSITY
+                    
+                    IF PROFILE-UNIVERSITY = SPACES
+                        MOVE "University/College is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM
+
+                PERFORM UNTIL PROFILE-MAJOR NOT = SPACES
+                    MOVE "Enter Major: " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-MAJOR
+
+                    IF PROFILE-MAJOR = SPACES
+                        MOVE "Major is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    END-IF
+                END-PERFORM
+
+                PERFORM UNTIL GRAD-YEAR-VALID = "Y"
+
+                    MOVE "Enter Graduation Year (YYYY): " TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    IF FUNCTION LENGTH(FUNCTION TRIM(INPUT-VALUE)) NOT = 4
+                        MOVE "Graduation year must be 4 digits." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+
+                    ELSE
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO GRAD-YEAR-INPUT
+
+                        IF GRAD-YEAR-INPUT IS NOT NUMERIC
+                            MOVE "Graduation year must be numeric." TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+
+                        ELSE
+                            IF GRAD-YEAR-INPUT > "2025"
+                            AND GRAD-YEAR-INPUT < "2034"
+
+                                MOVE GRAD-YEAR-INPUT TO PROFILE-GRAD-YEAR
+                                MOVE "Y" TO GRAD-YEAR-VALID
+
+                            ELSE
+                                MOVE "Graduation year must be between 2026 and 2033."
+                                    TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-IF
+                    END-IF
+
+                END-PERFORM.
+
+            GET-ABOUT-ME.
+                MOVE SPACES TO PROFILE-ABOUT-ME
+
+                MOVE "Enter About Me (optional, max 200 chars, enter blank line to skip): "
+                    TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+
+                PERFORM READ-INPUT
+                IF NO-MORE-INPUT
+                    EXIT PARAGRAPH
+                END-IF
+
+                MOVE FUNCTION TRIM(INPUT-VALUE)
+                    TO PROFILE-ABOUT-ME.
+                
+            GET-EXPERIENCE.
+                MOVE 0 TO EXPERIENCE-COUNT
+
+                PERFORM UNTIL EXPERIENCE-COUNT = 3
+
+                    MOVE "Experience Title (enter 'DONE' to finish): "
+                        TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    IF FUNCTION UPPER-CASE(FUNCTION TRIM(INPUT-VALUE)) = "DONE"
+                        EXIT PERFORM
+                    END-IF
+
+                    IF FUNCTION TRIM(INPUT-VALUE) = SPACES
+                        MOVE "Experience title is required." TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                    ELSE
+                        ADD 1 TO EXPERIENCE-COUNT
+
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO EXP-TITLE(EXPERIENCE-COUNT)
+
+                        MOVE SPACES TO EXP-COMPANY(EXPERIENCE-COUNT)
+
+                        PERFORM UNTIL EXP-COMPANY(EXPERIENCE-COUNT) NOT = SPACES
+
+                            MOVE "Company/Organization: " TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+
+                            PERFORM READ-INPUT
+                            IF NO-MORE-INPUT
+                                EXIT PARAGRAPH
+                            END-IF
+
+                            MOVE FUNCTION TRIM(INPUT-VALUE)
+                                TO EXP-COMPANY(EXPERIENCE-COUNT)
+
+                            IF EXP-COMPANY(EXPERIENCE-COUNT) = SPACES
+                                MOVE "Company/Organization is required."
+                                    TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-PERFORM
+
+                        MOVE SPACES TO EXP-DATES(EXPERIENCE-COUNT)
+
+                        PERFORM UNTIL EXP-DATES(EXPERIENCE-COUNT) NOT = SPACES
+
+                            MOVE "Dates: " TO OUTPUT-LINE
+                            PERFORM EMIT-LINE
+
+                            PERFORM READ-INPUT
+                            IF NO-MORE-INPUT
+                                EXIT PARAGRAPH
+                            END-IF
+
+                            MOVE FUNCTION TRIM(INPUT-VALUE)
+                                TO EXP-DATES(EXPERIENCE-COUNT)
+
+                            IF EXP-DATES(EXPERIENCE-COUNT) = SPACES
+                                MOVE "Dates are required." TO OUTPUT-LINE
+                                PERFORM EMIT-LINE
+                            END-IF
+                        END-PERFORM
+
+                        MOVE "Description (optional, blank to skip): "
+                            TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+
+                        PERFORM READ-INPUT
+                        IF NO-MORE-INPUT
+                            EXIT PARAGRAPH
+                        END-IF
+
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO EXP-DESCRIPTION(EXPERIENCE-COUNT)
+
+                    END-IF
+
+                END-PERFORM.
+
+            GET-EDUCATION.
+                MOVE ZERO TO EDUCATION-COUNT
+
+                PERFORM UNTIL EDUCATION-COUNT = 3
+
+                MOVE "Enter your degree:" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+
+                PERFORM READ-INPUT
+                IF NO-MORE-INPUT
+                    EXIT PERFORM
+                END-IF
+
+                ADD 1 TO EDUCATION-COUNT
+                MOVE FUNCTION TRIM(INPUT-VALUE)
+                   TO EDU-DEGREE(EDUCATION-COUNT)
+
+                MOVE "Enter your university:" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                PERFORM READ-INPUT
+                IF NO-MORE-INPUT
+                    EXIT PERFORM
+                END-IF
+
+                MOVE FUNCTION TRIM(INPUT-VALUE)
+                    TO EDU-UNIVERSITY(EDUCATION-COUNT)
+
+                MOVE "Enter the years attended:" TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+                PERFORM READ-INPUT
+                IF NO-MORE-INPUT
+                    EXIT PERFORM
+                END-IF
+
+                MOVE FUNCTION TRIM(INPUT-VALUE)
+                    TO EDU-YEARS(EDUCATION-COUNT)
+
+                MOVE "Education entry added." TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+
+                IF EDUCATION-COUNT < 3
+                    MOVE "Would you like to add another education entry? (Y/N)"
+                        TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PERFORM
+                    END-IF
+
+                    MOVE FUNCTION TRIM(INPUT-VALUE) TO CHOICE
+
+                    IF CHOICE NOT = "Y" AND CHOICE NOT = "y"
+                        EXIT PERFORM
+                    END-IF
+                END-IF
+
+            END-PERFORM.
+
+
+            SAVE-PROFILE.
+                MOVE "N" TO PROFILE-FOUND
+                MOVE "N" TO PROFILE-EOF
+                MOVE "N" TO TEMP-PROFILE-EOF
+
+                *> Try to open the existing profile file.
+                OPEN INPUT PROFILE-FILE
+
+                *> Profile file does not exist yet.
+                IF PROFILE-STATUS = "35"
+                    CLOSE PROFILE-FILE
+
+                    OPEN OUTPUT PROFILE-FILE
+
+                    IF PROFILE-STATUS NOT = "00"
+                        MOVE "Unable to create profile file."
+                            TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    PERFORM WRITE-CURRENT-PROFILE
+
+                    CLOSE PROFILE-FILE
+
+                    MOVE "Y" TO PROFILE-EXISTS
+                    EXIT PARAGRAPH
+                 END-IF
+
+                 *> Some other error occurred opening the profile file.
+                 IF PROFILE-STATUS NOT = "00"
+                     MOVE "Unable to open profile file."
+                         TO OUTPUT-LINE
+                     PERFORM EMIT-LINE
+                     EXIT PARAGRAPH
+                 END-IF
+
+                 *> Create a temporary file.
+                 OPEN OUTPUT TEMP-PROFILE-FILE
+
+                 IF TEMP-PROFILE-STATUS NOT = "00"
+                     MOVE "Unable to create temporary profile file."
+                         TO OUTPUT-LINE
+                     PERFORM EMIT-LINE
+                     CLOSE PROFILE-FILE
+                     EXIT PARAGRAPH
+                 END-IF
+
+                 *> Copy all existing profiles to the temporary file.
+                 *> Replace the current user's profile if it exists.
+                 PERFORM UNTIL NO-MORE-PROFILES
+
+                     READ PROFILE-FILE
+                         AT END
+                             MOVE "Y" TO PROFILE-EOF
+
+                         NOT AT END
+                             IF FILE-PROFILE-USERNAME = CURRENT-USERNAME
+
+                                 *> Replace current user's profile.
+                                 MOVE "Y" TO PROFILE-FOUND
+                                 PERFORM WRITE-CURRENT-PROFILE-TO-TEMP
+
+                             ELSE
+
+                                 *> Preserve other users' profiles.
+                                 PERFORM WRITE-EXISTING-PROFILE-TO-TEMP
+
+                             END-IF
+                     END-READ
+
+                  END-PERFORM
+
+                  CLOSE PROFILE-FILE
+
+                  *> If the current user did not already have a profile,
+                  *> add their new profile to the temporary file.
+                  IF PROFILE-FOUND NOT = "Y"
+                      PERFORM WRITE-CURRENT-PROFILE-TO-TEMP
+                  END-IF
+
+                  CLOSE TEMP-PROFILE-FILE
+
+                  *> Rebuild the original profile file from the temporary file.
+                  OPEN OUTPUT PROFILE-FILE
+
+                  IF PROFILE-STATUS NOT = "00"
+                      MOVE "Unable to recreate profile file."
+                          TO OUTPUT-LINE
+                      PERFORM EMIT-LINE
+                      EXIT PARAGRAPH
+                  END-IF
+
+                  OPEN INPUT TEMP-PROFILE-FILE
+
+                  IF TEMP-PROFILE-STATUS NOT = "00"
+                      MOVE "Unable to open temporary profile file."
+                          TO OUTPUT-LINE
+                      PERFORM EMIT-LINE
+                      CLOSE PROFILE-FILE
+                      EXIT PARAGRAPH
+                  END-IF
+
+                  *> Copy all temporary records back into the real profile file.
+                  MOVE "N" TO TEMP-PROFILE-EOF
+
+                  PERFORM UNTIL NO-MORE-TEMP-PROFILES
+
+                      READ TEMP-PROFILE-FILE
+                          AT END
+                              MOVE "Y" TO TEMP-PROFILE-EOF
+
+                          NOT AT END
+                              MOVE TEMP-PROFILE-RECORD
+                                  TO PROFILE-RECORD
+                              WRITE PROFILE-RECORD
+                      END-READ
+
+                  END-PERFORM
+
+                  CLOSE TEMP-PROFILE-FILE
+                  CLOSE PROFILE-FILE
+
+                  MOVE "Y" TO PROFILE-EXISTS.
+    
+        VIEW-PROFILE. 
+            MOVE "My Profile" TO OUTPUT-LINE
+            PERFORM EMIT-LINE
+
+            MOVE "First Name: " TO OUTPUT-LINE
+            MOVE PROFILE-FIRST-NAME TO OUTPUT-LINE(13:30)
+            PERFORM EMIT-LINE
+
+            MOVE "Last Name: " TO OUTPUT-LINE
+            MOVE PROFILE-LAST-NAME TO OUTPUT-LINE(12:30)
+            PERFORM EMIT-LINE
+
+            MOVE "University: " TO OUTPUT-LINE
+            MOVE PROFILE-UNIVERSITY TO OUTPUT-LINE(13:50)
+            PERFORM EMIT-LINE
+
+            MOVE "Major: " TO OUTPUT-LINE
+            MOVE PROFILE-MAJOR TO OUTPUT-LINE(8:50)
+            PERFORM EMIT-LINE
+
+            MOVE "Graduation Year: " TO OUTPUT-LINE
+            MOVE PROFILE-GRAD-YEAR TO OUTPUT-LINE(18:4)
+            PERFORM EMIT-LINE
+
+            MOVE "About Me: " TO OUTPUT-LINE
+            MOVE PROFILE-ABOUT-ME TO OUTPUT-LINE(11:200)
+            PERFORM EMIT-LINE
+
+            IF EDUCATION-COUNT = 0
+                MOVE "No education entries." TO OUTPUT-LINE
+                PERFORM EMIT-LINE
+            ELSE
+                PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
+                    UNTIL EDUCATION-INDEX > EDUCATION-COUNT
+
+                    MOVE "Degree: " TO OUTPUT-LINE
+                    MOVE EDU-DEGREE(EDUCATION-INDEX)
+                        TO OUTPUT-LINE(9:50)
+                    PERFORM EMIT-LINE
+
+                    MOVE "University: " TO OUTPUT-LINE
+                    MOVE EDU-UNIVERSITY(EDUCATION-INDEX)
+                        TO OUTPUT-LINE(13:50)
+                    PERFORM EMIT-LINE
+
+                    MOVE "Years: " TO OUTPUT-LINE
+                    MOVE EDU-YEARS(EDUCATION-INDEX)
+                        TO OUTPUT-LINE(8:20)
+                    PERFORM EMIT-LINE
+
+                END-PERFORM
+            END-IF. 
+    
         JOB-SEARCH.
             MOVE "Job search/internship is under construction." TO OUTPUT-LINE
             PERFORM EMIT-LINE.
@@ -415,11 +845,6 @@
             MOVE "Find someone you know is under construction." TO OUTPUT-LINE
             PERFORM EMIT-LINE.
         
-        UNDER-CONSTRUCTION.
-            MOVE "This skill is under construction." TO OUTPUT-LINE
-            PERFORM EMIT-LINE.
-
-
         SKILL-MENU.
             MOVE "N" TO SKILL-MENU-DONE
 
@@ -471,504 +896,16 @@
                 END-IF
             END-PERFORM.
 
-       LOAD-PROFILE.
-           MOVE SPACES TO PROFILE-FIRST-NAME
-                          PROFILE-LAST-NAME
-                          PROFILE-UNIVERSITY
-                          PROFILE-MAJOR
-                          PROFILE-GRAD-YEAR
-                          PROFILE-ABOUT-ME
+            UNDER-CONSTRUCTION.
+                MOVE "This skill is under construction." TO OUTPUT-LINE
+                PERFORM EMIT-LINE.
 
-           MOVE ZERO TO EDUCATION-COUNT
 
-           PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
-               UNTIL EDUCATION-INDEX > 3
-               MOVE SPACES TO EDU-DEGREE(EDUCATION-INDEX)
-                              EDU-UNIVERSITY(EDUCATION-INDEX)
-                              EDU-YEARS(EDUCATION-INDEX)
-           END-PERFORM
 
-           MOVE "N" TO PROFILE-EXISTS
 
-           OPEN INPUT PROFILE-FILE
 
-           IF PROFILE-STATUS = "35"
-               EXIT PARAGRAPH
-           END-IF
 
-           PERFORM UNTIL PROFILE-STATUS NOT = "00"
-               READ PROFILE-FILE
-                   AT END CONTINUE
-                   NOT AT END
-                       IF FILE-PROFILE-USERNAME = CURRENT-USERNAME
-                           MOVE FILE-FIRST-NAME
-                               TO PROFILE-FIRST-NAME
-                           MOVE FILE-LAST-NAME
-                               TO PROFILE-LAST-NAME
-                           MOVE FILE-UNIVERSITY
-                               TO PROFILE-UNIVERSITY
-                           MOVE FILE-MAJOR
-                               TO PROFILE-MAJOR
-                           MOVE FILE-GRAD-YEAR
-                               TO PROFILE-GRAD-YEAR
-                           MOVE FILE-ABOUT-ME
-                               TO PROFILE-ABOUT-ME
 
-                           MOVE FILE-EDUCATION-COUNT
-                               TO EDUCATION-COUNT
 
-                           PERFORM VARYING EDUCATION-INDEX
-                               FROM 1 BY 1
-                               UNTIL EDUCATION-INDEX > EDUCATION-COUNT
-
-                               MOVE FILE-EDU-DEGREE(EDUCATION-INDEX)
-                                   TO EDU-DEGREE(EDUCATION-INDEX)
-
-                               MOVE FILE-EDU-UNIVERSITY(EDUCATION-INDEX)
-                                   TO EDU-UNIVERSITY(EDUCATION-INDEX)
-
-                               MOVE FILE-EDU-YEARS(EDUCATION-INDEX)
-                                   TO EDU-YEARS(EDUCATION-INDEX)
-
-                           END-PERFORM
-
-                           MOVE "Y" TO PROFILE-EXISTS
-                       END-IF
-               END-READ
-           END-PERFORM
-
-           CLOSE PROFILE-FILE.
-
-
-       EDIT-PROFILE.
-           MOVE "Edit My Profile" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-
-           MOVE "Enter your first name:" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-           PERFORM READ-INPUT
-           IF NO-MORE-INPUT EXIT PARAGRAPH END-IF
-           MOVE FUNCTION TRIM(INPUT-VALUE) TO PROFILE-FIRST-NAME
-
-           MOVE "Enter your last name:" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-           PERFORM READ-INPUT
-           IF NO-MORE-INPUT EXIT PARAGRAPH END-IF
-           MOVE FUNCTION TRIM(INPUT-VALUE) TO PROFILE-LAST-NAME
-
-           MOVE "Enter your university:" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-           PERFORM READ-INPUT
-           IF NO-MORE-INPUT EXIT PARAGRAPH END-IF
-           MOVE FUNCTION TRIM(INPUT-VALUE) TO PROFILE-UNIVERSITY
-
-           MOVE "Enter your major:" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-           PERFORM READ-INPUT
-           IF NO-MORE-INPUT EXIT PARAGRAPH END-IF
-           MOVE FUNCTION TRIM(INPUT-VALUE) TO PROFILE-MAJOR
-
-           MOVE "Enter your graduation year:" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-           PERFORM READ-INPUT
-           IF NO-MORE-INPUT EXIT PARAGRAPH END-IF
-           MOVE FUNCTION TRIM(INPUT-VALUE) TO PROFILE-GRAD-YEAR
-
-           PERFORM VALIDATE-GRAD-YEAR
-           IF GRAD-YEAR-VALID NOT = "Y"
-               MOVE "Invalid graduation year." TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               EXIT PARAGRAPH
-           END-IF
-
-           MOVE "Tell us about yourself:" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-           PERFORM READ-INPUT
-           IF NO-MORE-INPUT EXIT PARAGRAPH END-IF
-           MOVE FUNCTION TRIM(INPUT-VALUE) TO PROFILE-ABOUT-ME
-           
-           PERFORM ADD-EDUCATION
-
-           PERFORM SAVE-PROFILE
-
-           MOVE "Profile updated successfully." TO OUTPUT-LINE
-           PERFORM EMIT-LINE.
-
-       ADD-EDUCATION.
-           MOVE ZERO TO EDUCATION-COUNT
-
-           PERFORM UNTIL EDUCATION-COUNT = 3
-
-               MOVE "Enter your degree:" TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               PERFORM READ-INPUT
-               IF NO-MORE-INPUT
-                   EXIT PERFORM
-               END-IF
-
-               ADD 1 TO EDUCATION-COUNT
-               MOVE FUNCTION TRIM(INPUT-VALUE)
-                   TO EDU-DEGREE(EDUCATION-COUNT)
-
-               MOVE "Enter your university:" TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               PERFORM READ-INPUT
-               IF NO-MORE-INPUT
-                   EXIT PERFORM
-               END-IF
-
-               MOVE FUNCTION TRIM(INPUT-VALUE)
-                   TO EDU-UNIVERSITY(EDUCATION-COUNT)
-
-               MOVE "Enter the years attended:" TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               PERFORM READ-INPUT
-               IF NO-MORE-INPUT
-                   EXIT PERFORM
-               END-IF
-
-               MOVE FUNCTION TRIM(INPUT-VALUE)
-                   TO EDU-YEARS(EDUCATION-COUNT)
-
-               MOVE "Education entry added." TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-
-               IF EDUCATION-COUNT < 3
-                   MOVE "Would you like to add another education entry? (Y/N)"
-                       TO OUTPUT-LINE
-                   PERFORM EMIT-LINE
-                   PERFORM READ-INPUT
-                   IF NO-MORE-INPUT
-                       EXIT PERFORM
-                   END-IF
-
-                   MOVE FUNCTION TRIM(INPUT-VALUE) TO CHOICE
-
-                   IF CHOICE NOT = "Y" AND CHOICE NOT = "y"
-                       EXIT PERFORM
-                   END-IF
-               END-IF
-
-           END-PERFORM.
-
-
-       VIEW-PROFILE.
-           MOVE "My Profile" TO OUTPUT-LINE
-           PERFORM EMIT-LINE
-
-           MOVE "First Name: " TO OUTPUT-LINE
-           MOVE PROFILE-FIRST-NAME TO OUTPUT-LINE(13:30)
-           PERFORM EMIT-LINE
-
-           MOVE "Last Name: " TO OUTPUT-LINE
-           MOVE PROFILE-LAST-NAME TO OUTPUT-LINE(12:30)
-           PERFORM EMIT-LINE
-
-           MOVE "University: " TO OUTPUT-LINE
-           MOVE PROFILE-UNIVERSITY TO OUTPUT-LINE(13:50)
-           PERFORM EMIT-LINE
-
-           MOVE "Major: " TO OUTPUT-LINE
-           MOVE PROFILE-MAJOR TO OUTPUT-LINE(8:50)
-           PERFORM EMIT-LINE
-
-           MOVE "Graduation Year: " TO OUTPUT-LINE
-           MOVE PROFILE-GRAD-YEAR TO OUTPUT-LINE(18:4)
-           PERFORM EMIT-LINE
-
-           MOVE "About Me: " TO OUTPUT-LINE
-           MOVE PROFILE-ABOUT-ME TO OUTPUT-LINE(11:200)
-           PERFORM EMIT-LINE
-
-           IF EDUCATION-COUNT = 0
-               MOVE "No education entries." TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-           ELSE
-               PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
-                   UNTIL EDUCATION-INDEX > EDUCATION-COUNT
-
-                   MOVE "Degree: " TO OUTPUT-LINE
-                   MOVE EDU-DEGREE(EDUCATION-INDEX)
-                       TO OUTPUT-LINE(9:50)
-                   PERFORM EMIT-LINE
-
-                   MOVE "University: " TO OUTPUT-LINE
-                   MOVE EDU-UNIVERSITY(EDUCATION-INDEX)
-                       TO OUTPUT-LINE(13:50)
-                   PERFORM EMIT-LINE
-
-                   MOVE "Years: " TO OUTPUT-LINE
-                   MOVE EDU-YEARS(EDUCATION-INDEX)
-                       TO OUTPUT-LINE(8:20)
-                   PERFORM EMIT-LINE
-
-               END-PERFORM
-           END-IF.
-
-       WRITE-CURRENT-PROFILE.
-           MOVE CURRENT-USERNAME
-               TO FILE-PROFILE-USERNAME
-
-           MOVE PROFILE-FIRST-NAME
-               TO FILE-FIRST-NAME
-
-           MOVE PROFILE-LAST-NAME
-               TO FILE-LAST-NAME
-
-           MOVE PROFILE-UNIVERSITY
-               TO FILE-UNIVERSITY
-
-           MOVE PROFILE-MAJOR
-               TO FILE-MAJOR
-
-           MOVE PROFILE-GRAD-YEAR
-               TO FILE-GRAD-YEAR
-
-           MOVE PROFILE-ABOUT-ME
-               TO FILE-ABOUT-ME
-
-           MOVE EDUCATION-COUNT
-               TO FILE-EDUCATION-COUNT
-
-           PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
-               UNTIL EDUCATION-INDEX > 3
-
-               MOVE EDU-DEGREE(EDUCATION-INDEX)
-                   TO FILE-EDU-DEGREE(EDUCATION-INDEX)
-
-               MOVE EDU-UNIVERSITY(EDUCATION-INDEX)
-                   TO FILE-EDU-UNIVERSITY(EDUCATION-INDEX)
-
-               MOVE EDU-YEARS(EDUCATION-INDEX)
-                   TO FILE-EDU-YEARS(EDUCATION-INDEX)
-
-           END-PERFORM
-
-           WRITE PROFILE-RECORD.
-       
-       WRITE-CURRENT-PROFILE-TO-TEMP.
-           MOVE CURRENT-USERNAME
-               TO TEMP-PROFILE-USERNAME
-
-           MOVE PROFILE-FIRST-NAME
-               TO TEMP-FIRST-NAME
-
-           MOVE PROFILE-LAST-NAME
-               TO TEMP-LAST-NAME
-
-           MOVE PROFILE-UNIVERSITY
-               TO TEMP-UNIVERSITY
-
-           MOVE PROFILE-MAJOR
-               TO TEMP-MAJOR
-
-           MOVE PROFILE-GRAD-YEAR
-               TO TEMP-GRAD-YEAR
-
-           MOVE PROFILE-ABOUT-ME
-               TO TEMP-ABOUT-ME
-
-           MOVE EDUCATION-COUNT
-               TO TEMP-EDUCATION-COUNT
-
-           PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
-               UNTIL EDUCATION-INDEX > 3
-
-               MOVE EDU-DEGREE(EDUCATION-INDEX)
-                   TO TEMP-EDU-DEGREE(EDUCATION-INDEX)
-
-               MOVE EDU-UNIVERSITY(EDUCATION-INDEX)
-                   TO TEMP-EDU-UNIVERSITY(EDUCATION-INDEX)
-
-               MOVE EDU-YEARS(EDUCATION-INDEX)
-                   TO TEMP-EDU-YEARS(EDUCATION-INDEX)
-
-           END-PERFORM
-
-           WRITE TEMP-PROFILE-RECORD.
-
-       WRITE-EXISTING-PROFILE-TO-TEMP.
-           MOVE FILE-PROFILE-USERNAME
-               TO TEMP-PROFILE-USERNAME
-
-           MOVE FILE-FIRST-NAME
-               TO TEMP-FIRST-NAME
-
-           MOVE FILE-LAST-NAME
-               TO TEMP-LAST-NAME
-
-           MOVE FILE-UNIVERSITY
-               TO TEMP-UNIVERSITY
-
-           MOVE FILE-MAJOR
-               TO TEMP-MAJOR
-
-           MOVE FILE-GRAD-YEAR
-               TO TEMP-GRAD-YEAR
-
-           MOVE FILE-ABOUT-ME
-               TO TEMP-ABOUT-ME
-
-           MOVE FILE-EDUCATION-COUNT
-               TO TEMP-EDUCATION-COUNT
-
-           PERFORM VARYING EDUCATION-INDEX FROM 1 BY 1
-               UNTIL EDUCATION-INDEX > 3
-
-               MOVE FILE-EDU-DEGREE(EDUCATION-INDEX)
-                   TO TEMP-EDU-DEGREE(EDUCATION-INDEX)
-
-               MOVE FILE-EDU-UNIVERSITY(EDUCATION-INDEX)
-                   TO TEMP-EDU-UNIVERSITY(EDUCATION-INDEX)
-
-               MOVE FILE-EDU-YEARS(EDUCATION-INDEX)
-                   TO TEMP-EDU-YEARS(EDUCATION-INDEX)
-
-           END-PERFORM
-
-           WRITE TEMP-PROFILE-RECORD.
-
-
-
-       SAVE-PROFILE.
-           MOVE "N" TO PROFILE-FOUND
-           MOVE "N" TO PROFILE-EOF
-           MOVE "N" TO TEMP-PROFILE-EOF
-
-           *> Try to open the existing profile file.
-           OPEN INPUT PROFILE-FILE
-
-           *> Profile file does not exist yet.
-           IF PROFILE-STATUS = "35"
-               CLOSE PROFILE-FILE
-
-               OPEN OUTPUT PROFILE-FILE
-
-               IF PROFILE-STATUS NOT = "00"
-                   MOVE "Unable to create profile file."
-                       TO OUTPUT-LINE
-                   PERFORM EMIT-LINE
-                   EXIT PARAGRAPH
-               END-IF
-
-               PERFORM WRITE-CURRENT-PROFILE
-
-               CLOSE PROFILE-FILE
-
-               MOVE "Y" TO PROFILE-EXISTS
-               EXIT PARAGRAPH
-           END-IF
-
-           *> Some other error occurred opening the profile file.
-           IF PROFILE-STATUS NOT = "00"
-               MOVE "Unable to open profile file."
-                   TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               EXIT PARAGRAPH
-           END-IF
-
-           *> Create a temporary file.
-           OPEN OUTPUT TEMP-PROFILE-FILE
-
-           IF TEMP-PROFILE-STATUS NOT = "00"
-               MOVE "Unable to create temporary profile file."
-                   TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               CLOSE PROFILE-FILE
-               EXIT PARAGRAPH
-           END-IF
-
-           *> Copy all existing profiles to the temporary file.
-           *> Replace the current user's profile if it exists.
-           PERFORM UNTIL NO-MORE-PROFILES
-
-               READ PROFILE-FILE
-                   AT END
-                       MOVE "Y" TO PROFILE-EOF
-
-                   NOT AT END
-                       IF FILE-PROFILE-USERNAME = CURRENT-USERNAME
-
-                           *> Replace current user's profile.
-                           MOVE "Y" TO PROFILE-FOUND
-                           PERFORM WRITE-CURRENT-PROFILE-TO-TEMP
-
-                       ELSE
-
-                           *> Preserve other users' profiles.
-                           PERFORM WRITE-EXISTING-PROFILE-TO-TEMP
-
-                       END-IF
-               END-READ
-
-           END-PERFORM
-
-           CLOSE PROFILE-FILE
-
-           *> If the current user did not already have a profile,
-           *> add their new profile to the temporary file.
-           IF PROFILE-FOUND NOT = "Y"
-               PERFORM WRITE-CURRENT-PROFILE-TO-TEMP
-           END-IF
-
-           CLOSE TEMP-PROFILE-FILE
-
-           *> Rebuild the original profile file from the temporary file.
-           OPEN OUTPUT PROFILE-FILE
-
-           IF PROFILE-STATUS NOT = "00"
-               MOVE "Unable to recreate profile file."
-                   TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               EXIT PARAGRAPH
-           END-IF
-
-           OPEN INPUT TEMP-PROFILE-FILE
-
-           IF TEMP-PROFILE-STATUS NOT = "00"
-               MOVE "Unable to open temporary profile file."
-                   TO OUTPUT-LINE
-               PERFORM EMIT-LINE
-               CLOSE PROFILE-FILE
-               EXIT PARAGRAPH
-           END-IF
-
-           *> Copy all temporary records back into the real profile file.
-           MOVE "N" TO TEMP-PROFILE-EOF
-
-           PERFORM UNTIL NO-MORE-TEMP-PROFILES
-
-               READ TEMP-PROFILE-FILE
-                   AT END
-                       MOVE "Y" TO TEMP-PROFILE-EOF
-
-                   NOT AT END
-                       MOVE TEMP-PROFILE-RECORD
-                           TO PROFILE-RECORD
-                       WRITE PROFILE-RECORD
-               END-READ
-
-           END-PERFORM
-
-           CLOSE TEMP-PROFILE-FILE
-           CLOSE PROFILE-FILE
-
-           MOVE "Y" TO PROFILE-EXISTS.
-
-       VALIDATE-GRAD-YEAR.
-           MOVE "N" TO GRAD-YEAR-VALID
-
-           IF PROFILE-GRAD-YEAR IS NUMERIC
-               IF PROFILE-GRAD-YEAR >= "1900"
-                   AND PROFILE-GRAD-YEAR <= "2100"
-                   MOVE "Y" TO GRAD-YEAR-VALID
-               END-IF
-           END-IF.
-
-       EMIT-LINE.
-           DISPLAY FUNCTION TRIM(OUTPUT-LINE TRAILING) END-DISPLAY
-           MOVE OUTPUT-LINE TO OUTPUT-RECORD
-           WRITE OUTPUT-RECORD END-WRITE
-           MOVE SPACES TO OUTPUT-LINE.
 
 
