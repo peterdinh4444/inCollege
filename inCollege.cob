@@ -405,9 +405,25 @@
 
         CREATE-EDIT-PROFILE.
             PERFORM GET-BASIC-PROFILE-INFORMATION
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM GET-ABOUT-ME
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM GET-EXPERIENCE
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM GET-EDUCATION
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM SAVE-PROFILE.
 
             GET-BASIC-PROFILE-INFORMATION.
