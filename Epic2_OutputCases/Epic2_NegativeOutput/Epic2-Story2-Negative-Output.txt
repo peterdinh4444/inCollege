@@ -1,0 +1,95 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s2_neg_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s2_neg_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Owen
+Enter Last Name:
+Whitfield
+Enter University/College Attended:
+Lakeside University
+Enter Major:
+Business Administration
+Enter Graduation Year (YYYY):
+2027
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Unable to save profile.
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Owen
+Enter Last Name:
+Whitfield
+Enter University/College Attended:
+Lakeside University
+Enter Major:
+
+Major is required.
+Enter Major:
+Marketing
+Enter Graduation Year (YYYY):
+MMXX
+Graduation year must be numeric.
+Enter Graduation Year (YYYY):
+1990
+Graduation year must be between 2026 and 2033.
+Enter Graduation Year (YYYY):
+2027
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Unable to save profile.
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+No profile has been created yet.
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

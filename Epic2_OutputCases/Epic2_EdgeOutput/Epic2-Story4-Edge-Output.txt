@@ -1,0 +1,46 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s4_edge_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s4_edge_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Delaney
+Enter Last Name:
+Voss
+Enter University/College Attended:
+Brookstone College
+Enter Major:
+Accounting
+Enter Graduation Year (YYYY):
+2025
+Graduation year must be between 2026 and 2033.
+Enter Graduation Year (YYYY):
+2034
+Graduation year must be between 2026 and 2033.
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Experience Title (enter 'DONE' to finish):
+Education Degree (enter 'DONE' to finish):
+Profile saved successfully!

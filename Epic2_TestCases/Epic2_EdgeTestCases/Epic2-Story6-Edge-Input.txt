@@ -1,0 +1,31 @@
+2
+s6_edge_acct
+TestPass1!
+1
+s6_edge_acct
+TestPass1!
+1
+Harper
+Quintela
+Fairmont University
+Marketing
+2026
+Marketing student focused on digital campaigns.
+Marketing Intern
+BrightPath Media
+Summer 2024
+Coordinated social media content calendars.
+Campus Ambassador
+Fairmont University
+Fall 2023 - Spring 2024
+Represented the university at recruitment events.
+Freelance Designer
+Self-Employed
+2022-2023
+Created marketing materials for small local businesses.
+Freelance Photographer
+DONE
+DONE
+DONE
+2
+Logout

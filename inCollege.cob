@@ -17,10 +17,10 @@
        DATA DIVISION.
        FILE SECTION.
        FD  INPUT-FILE.
-       01  INPUT-RECORD                    PIC X(200).
+       01  INPUT-RECORD                    PIC X(500).
 
        FD  OUTPUT-FILE.
-       01  OUTPUT-RECORD                   PIC X(200).
+       01  OUTPUT-RECORD                   PIC X(500).
 
        FD  ACCOUNT-FILE.
        01  ACCOUNT-RECORD.
@@ -56,8 +56,8 @@
            88 NO-MORE-INPUT                      VALUE "Y".
        01  PROFILE-EOF                     PIC X VALUE "N".
 
-       01  INPUT-VALUE                     PIC X(200).
-       01  OUTPUT-LINE                     PIC X(200).
+       01  INPUT-VALUE                     PIC X(500).
+       01  OUTPUT-LINE                     PIC X(500).
        01  CHOICE                          PIC X(20).
 
        *> ACCOUNT / LOGIN VARIABLES
@@ -96,9 +96,11 @@
        01  GRAD-YEAR-LENGTH                PIC 9(3) VALUE ZERO.
        01  GRAD-YEAR-INPUT                 PIC X(4).
 
+
        *> EXPERIENCE
        01  EXPERIENCE-COUNT                PIC 9 VALUE ZERO.
        01  EXPERIENCE-INDEX                PIC 9 VALUE ZERO.
+       01  EXPERIENCE-DONE                 PIC X VALUE "N".
 
        01  EXPERIENCE-TABLE OCCURS 3 TIMES.
            05 EXP-TITLE                    PIC X(50).
@@ -109,6 +111,7 @@
        *> EDUCATION
        01  EDUCATION-COUNT                 PIC 9 VALUE ZERO.
        01  EDUCATION-INDEX                 PIC 9 VALUE ZERO.
+       01  EDUCATION-DONE                  PIC X VALUE "N".
 
        01  EDUCATION-TABLE OCCURS 3 TIMES.
            05 EDU-DEGREE                   PIC X(50).
@@ -405,9 +408,25 @@
 
         CREATE-EDIT-PROFILE.
             PERFORM GET-BASIC-PROFILE-INFORMATION
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM GET-ABOUT-ME
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM GET-EXPERIENCE
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM GET-EDUCATION
+            IF NO-MORE-INPUT
+                EXIT PARAGRAPH
+            END-IF
+
             PERFORM SAVE-PROFILE.
 
             GET-BASIC-PROFILE-INFORMATION.
@@ -531,7 +550,8 @@
             GET-ABOUT-ME.
                 MOVE SPACES TO PROFILE-ABOUT-ME
 
-                MOVE "Enter About Me (optional, max 200 chars, enter blank line to skip): "
+                MOVE
+                    "Enter About Me (optional, max 200 chars, enter blank line to skip): "
                     TO OUTPUT-LINE
                 PERFORM EMIT-LINE
 
@@ -540,13 +560,23 @@
                     EXIT PARAGRAPH
                 END-IF
 
-                MOVE FUNCTION TRIM(INPUT-VALUE)
-                    TO PROFILE-ABOUT-ME.
+                IF FUNCTION LENGTH(
+                    FUNCTION TRIM(INPUT-VALUE)
+                ) > 200
+
+                    MOVE INPUT-VALUE(1:200)
+                        TO PROFILE-ABOUT-ME
+
+                ELSE
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-ABOUT-ME
+                END-IF.
                 
             GET-EXPERIENCE.
                 MOVE 0 TO EXPERIENCE-COUNT
+                MOVE "N" TO EXPERIENCE-DONE
 
-                PERFORM UNTIL EXPERIENCE-COUNT = 3
+                PERFORM UNTIL EXPERIENCE-DONE = "Y"
 
                     MOVE "Experience Title (enter 'DONE' to finish): "
                         TO OUTPUT-LINE
@@ -558,81 +588,112 @@
                     END-IF
 
                     IF FUNCTION UPPER-CASE(FUNCTION TRIM(INPUT-VALUE)) = "DONE"
-                        EXIT PERFORM
-                    END-IF
+                        MOVE "Y" TO EXPERIENCE-DONE
 
-                    IF FUNCTION TRIM(INPUT-VALUE) = SPACES
-                        MOVE "Experience title is required." TO OUTPUT-LINE
-                        PERFORM EMIT-LINE
                     ELSE
-                        ADD 1 TO EXPERIENCE-COUNT
-
-                        MOVE FUNCTION TRIM(INPUT-VALUE)
-                            TO EXP-TITLE(EXPERIENCE-COUNT)
-
-                        MOVE SPACES TO EXP-COMPANY(EXPERIENCE-COUNT)
-
-                        PERFORM UNTIL EXP-COMPANY(EXPERIENCE-COUNT) NOT = SPACES
-
-                            MOVE "Company/Organization: " TO OUTPUT-LINE
+                        IF FUNCTION TRIM(INPUT-VALUE) = SPACES
+                            MOVE "Experience title is required."
+                                TO OUTPUT-LINE
                             PERFORM EMIT-LINE
 
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
-
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EXP-COMPANY(EXPERIENCE-COUNT)
-
-                            IF EXP-COMPANY(EXPERIENCE-COUNT) = SPACES
-                                MOVE "Company/Organization is required."
+                        ELSE
+                            IF EXPERIENCE-COUNT = 3
+                                MOVE "Maximum of 3 experience entries allowed."
                                     TO OUTPUT-LINE
                                 PERFORM EMIT-LINE
-                            END-IF
-                        END-PERFORM
 
-                        MOVE SPACES TO EXP-DATES(EXPERIENCE-COUNT)
+                            ELSE
+                                ADD 1 TO EXPERIENCE-COUNT
 
-                        PERFORM UNTIL EXP-DATES(EXPERIENCE-COUNT) NOT = SPACES
+                                MOVE FUNCTION TRIM(INPUT-VALUE)
+                                    TO EXP-TITLE(EXPERIENCE-COUNT)
 
-                            MOVE "Dates: " TO OUTPUT-LINE
-                            PERFORM EMIT-LINE
+                                MOVE SPACES
+                                    TO EXP-COMPANY(EXPERIENCE-COUNT)
 
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
+                                PERFORM UNTIL
+                                    EXP-COMPANY(EXPERIENCE-COUNT)
+                                    NOT = SPACES
 
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EXP-DATES(EXPERIENCE-COUNT)
+                                    MOVE "Company/Organization: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
 
-                            IF EXP-DATES(EXPERIENCE-COUNT) = SPACES
-                                MOVE "Dates are required." TO OUTPUT-LINE
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EXP-COMPANY(EXPERIENCE-COUNT)
+
+                                    IF EXP-COMPANY(EXPERIENCE-COUNT)
+                                        = SPACES
+
+                                        MOVE
+                                            "Company/Organization is required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
+                                MOVE SPACES
+                                    TO EXP-DATES(EXPERIENCE-COUNT)
+
+                                PERFORM UNTIL
+                                    EXP-DATES(EXPERIENCE-COUNT)
+                                    NOT = SPACES
+
+                                    MOVE "Dates: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
+
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EXP-DATES(EXPERIENCE-COUNT)
+
+                                    IF EXP-DATES(EXPERIENCE-COUNT)
+                                        = SPACES
+
+                                        MOVE "Dates are required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
+                                MOVE
+                                    "Description (optional, blank to skip): "
+                                    TO OUTPUT-LINE
                                 PERFORM EMIT-LINE
+
+                                PERFORM READ-INPUT
+                                IF NO-MORE-INPUT
+                                    EXIT PARAGRAPH
+                                END-IF
+
+                                MOVE FUNCTION TRIM(INPUT-VALUE)
+                                    TO EXP-DESCRIPTION(
+                                        EXPERIENCE-COUNT
+                                    )
+
                             END-IF
-                        END-PERFORM
-
-                        MOVE "Description (optional, blank to skip): "
-                            TO OUTPUT-LINE
-                        PERFORM EMIT-LINE
-
-                        PERFORM READ-INPUT
-                        IF NO-MORE-INPUT
-                            EXIT PARAGRAPH
                         END-IF
-
-                        MOVE FUNCTION TRIM(INPUT-VALUE)
-                            TO EXP-DESCRIPTION(EXPERIENCE-COUNT)
-
                     END-IF
 
                 END-PERFORM.
 
             GET-EDUCATION.
                 MOVE 0 TO EDUCATION-COUNT
+                MOVE "N" TO EDUCATION-DONE
 
-                PERFORM UNTIL EDUCATION-COUNT = 3
+                PERFORM UNTIL EDUCATION-DONE = "Y"
+
                     MOVE "Education Degree (enter 'DONE' to finish): "
                         TO OUTPUT-LINE
                     PERFORM EMIT-LINE
@@ -643,57 +704,89 @@
                     END-IF
 
                     IF FUNCTION UPPER-CASE(FUNCTION TRIM(INPUT-VALUE)) = "DONE"
-                        EXIT PERFORM
-                    END-IF
+                        MOVE "Y" TO EDUCATION-DONE
 
-                    IF FUNCTION TRIM(INPUT-VALUE) = SPACES
-                        MOVE "Degree is required." TO OUTPUT-LINE
-                        PERFORM EMIT-LINE
                     ELSE
-                        ADD 1 TO EDUCATION-COUNT
-                        MOVE FUNCTION TRIM(INPUT-VALUE)
-                            TO EDU-DEGREE(EDUCATION-COUNT)
-
-                        MOVE SPACES TO EDU-UNIVERSITY(EDUCATION-COUNT)
-                        PERFORM UNTIL EDU-UNIVERSITY(EDUCATION-COUNT)
-                            NOT = SPACES
-
-                            MOVE "University/College: " TO OUTPUT-LINE
+                        IF FUNCTION TRIM(INPUT-VALUE) = SPACES
+                            MOVE "Degree is required."
+                                TO OUTPUT-LINE
                             PERFORM EMIT-LINE
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
 
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EDU-UNIVERSITY(EDUCATION-COUNT)
-
-                            IF EDU-UNIVERSITY(EDUCATION-COUNT) = SPACES
-                                MOVE "University/College is required."
+                        ELSE
+                            IF EDUCATION-COUNT = 3
+                                MOVE "Maximum of 3 education entries allowed."
                                     TO OUTPUT-LINE
                                 PERFORM EMIT-LINE
-                            END-IF
-                        END-PERFORM
+                                MOVE "Y" TO EDUCATION-DONE
 
-                        MOVE SPACES TO EDU-YEARS(EDUCATION-COUNT)
-                        PERFORM UNTIL EDU-YEARS(EDUCATION-COUNT) NOT = SPACES
-                            MOVE "Years Attended: " TO OUTPUT-LINE
-                            PERFORM EMIT-LINE
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
+                            ELSE
+                                ADD 1 TO EDUCATION-COUNT
 
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EDU-YEARS(EDUCATION-COUNT)
+                                MOVE FUNCTION TRIM(INPUT-VALUE)
+                                    TO EDU-DEGREE(EDUCATION-COUNT)
 
-                            IF EDU-YEARS(EDUCATION-COUNT) = SPACES
-                                MOVE "Years attended are required."
-                                    TO OUTPUT-LINE
-                                PERFORM EMIT-LINE
+                                MOVE SPACES
+                                    TO EDU-UNIVERSITY(EDUCATION-COUNT)
+
+                                PERFORM UNTIL
+                                    EDU-UNIVERSITY(EDUCATION-COUNT)
+                                    NOT = SPACES
+
+                                    MOVE "University/College: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
+
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EDU-UNIVERSITY(EDUCATION-COUNT)
+
+                                    IF EDU-UNIVERSITY(EDUCATION-COUNT)
+                                        = SPACES
+
+                                        MOVE "University/College is required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
+                                MOVE SPACES
+                                    TO EDU-YEARS(EDUCATION-COUNT)
+
+                                PERFORM UNTIL
+                                    EDU-YEARS(EDUCATION-COUNT)
+                                    NOT = SPACES
+
+                                    MOVE "Years Attended: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
+
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EDU-YEARS(EDUCATION-COUNT)
+
+                                    IF EDU-YEARS(EDUCATION-COUNT)
+                                        = SPACES
+
+                                        MOVE "Years attended are required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
                             END-IF
-                        END-PERFORM
+                        END-IF
                     END-IF
+
                 END-PERFORM.
 
             SAVE-PROFILE.

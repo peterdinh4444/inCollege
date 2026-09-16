@@ -1,0 +1,89 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s6_edge_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s6_edge_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Harper
+Enter Last Name:
+Quintela
+Enter University/College Attended:
+Fairmont University
+Enter Major:
+Marketing
+Enter Graduation Year (YYYY):
+2026
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Marketing student focused on digital campaigns.
+Experience Title (enter 'DONE' to finish):
+Marketing Intern
+Company/Organization:
+BrightPath Media
+Dates:
+Summer 2024
+Description (optional, blank to skip):
+Coordinated social media content calendars.
+Experience Title (enter 'DONE' to finish):
+Campus Ambassador
+Company/Organization:
+Fairmont University
+Dates:
+Fall 2023 - Spring 2024
+Description (optional, blank to skip):
+Represented the university at recruitment events.
+Experience Title (enter 'DONE' to finish):
+Freelance Designer
+Company/Organization:
+Self-Employed
+Dates:
+2022-2023
+Description (optional, blank to skip):
+Created marketing materials for small local businesses.
+Education Degree (enter 'DONE' to finish):
+Freelance Photographer
+University/College:
+DONE
+Years Attended:
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Unable to save profile.
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+No profile has been created yet.
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout
