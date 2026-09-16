@@ -1,0 +1,11 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s8_edge_acct
+Please enter your password:
+testpass1!
+Incorrect username/password, please try again
+Please enter your username:

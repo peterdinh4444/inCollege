@@ -1,0 +1,24 @@
+2
+s6_neg_acct
+TestPass1!
+1
+s6_neg_acct
+TestPass1!
+1
+Caleb
+Marsh
+Union River College
+Mechanical Engineering
+2027
+
+
+Manufacturing Intern
+
+Ironclad Manufacturing
+
+Summer 2023
+Assisted with quality control inspections on the assembly line.
+DONE
+DONE
+2
+Logout

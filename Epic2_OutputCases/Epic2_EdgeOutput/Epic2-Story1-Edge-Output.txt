@@ -1,0 +1,65 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+acct01
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+acct02
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+acct03
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+acct04
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+acct05
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+acct06
+Please enter your password:
+TestPass1!
+All permitted accounts have been created, please come back later
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+acct06
+Please enter your password:
+TestPass1!
+Incorrect username/password, please try again
+Please enter your username:

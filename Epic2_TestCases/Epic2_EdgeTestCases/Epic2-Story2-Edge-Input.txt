@@ -1,0 +1,40 @@
+2
+s2_edge_acct
+TestPass1!
+1
+s2_edge_acct
+TestPass1!
+1
+Talia
+Brennan
+Pinecrest University
+Environmental Science
+2026
+
+DONE
+DONE
+1
+Talia
+Brennan
+Pinecrest University
+Environmental Science
+2026
+
+Sustainability Intern
+Greenway Conservation Trust
+Summer 2023
+Conducted field surveys of local wetland restoration sites.
+Lab Assistant
+Pinecrest University
+Fall 2022 - Spring 2023
+Processed soil samples for a departmental research project.
+Volunteer Coordinator
+Riverbend Cleanup Initiative
+2021-2022
+Organized community volunteers for quarterly river cleanup events.
+Unwanted Fourth Role
+DONE
+DONE
+DONE
+2
+Logout
