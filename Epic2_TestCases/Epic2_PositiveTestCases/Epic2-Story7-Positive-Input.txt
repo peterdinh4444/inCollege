@@ -1,0 +1,23 @@
+2
+s7_pos_acct
+TestPass1!
+1
+s7_pos_acct
+TestPass1!
+1
+Skyler
+Nguyen
+East Ridge University
+Biology
+2030
+Biology student preparing for graduate research.
+DONE
+Bachelor of Science in Biology
+East Ridge University
+2026-2030
+Associate of Science
+Pine County College
+2024-2026
+DONE
+2
+Logout

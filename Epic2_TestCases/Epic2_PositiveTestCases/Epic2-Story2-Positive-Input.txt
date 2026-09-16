@@ -1,0 +1,30 @@
+2
+s2_pos_acct
+TestPass1!
+1
+s2_pos_acct
+TestPass1!
+1
+Casey
+Morgan
+Lakeshore College
+Information Systems
+2028
+Student interested in database design.
+DONE
+DONE
+1
+Casey
+Morgan
+Lakeshore College
+Cybersecurity
+2030
+Student focused on secure software and network defense.
+Security Intern
+Blue Shield Labs
+Summer 2026
+Assisted with vulnerability assessments.
+DONE
+DONE
+2
+Logout

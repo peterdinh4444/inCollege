@@ -1,0 +1,25 @@
+2
+s6_pos_acct
+TestPass1!
+1
+s6_pos_acct
+TestPass1!
+1
+Morgan
+Reed
+Central City College
+Marketing
+2029
+Marketing student with experience in digital campaigns.
+Marketing Intern
+BrightPath Media
+Summer 2025
+Prepared weekly campaign performance reports.
+Campus Ambassador
+Central City College
+2024-2025
+Represented the college at student recruitment events.
+DONE
+DONE
+2
+Logout

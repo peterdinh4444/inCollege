@@ -1,0 +1,23 @@
+2
+s8_pos_acct
+TestPass1!
+1
+s8_pos_acct
+TestPass1!
+1
+Jamie
+Williams
+Redwood University
+Political Science
+2028
+Student interested in public policy and community service.
+Policy Intern
+City Council Office
+Summer 2025
+Researched local housing policy proposals.
+DONE
+Bachelor of Arts in Political Science
+Redwood University
+2024-2028
+DONE
+Logout

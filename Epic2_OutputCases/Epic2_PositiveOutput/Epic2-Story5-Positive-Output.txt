@@ -1,0 +1,72 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s5_pos_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s5_pos_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Taylor
+Enter Last Name:
+Brooks
+Enter University/College Attended:
+Western Plains University
+Enter Major:
+Digital Media
+Enter Graduation Year (YYYY):
+2028
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Creative student interested in accessible web design and collaborative projects.
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+--- Your Profile ---
+Name: Taylor Brooks
+University: Western Plains University
+Major: Digital Media
+Graduation Year: 2028
+About Me:
+Creative student interested in accessible web design and collaborative projects.
+Experience:
+None
+Education:
+None
+--------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout
