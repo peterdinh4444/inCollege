@@ -95,7 +95,7 @@
        01  GRAD-YEAR-VALID                 PIC X VALUE "N".
        01  GRAD-YEAR-LENGTH                PIC 9(3) VALUE ZERO.
        01  GRAD-YEAR-INPUT                 PIC X(4).
-       01  ABOUT-ME-VALID                  PIC X VALUE "N".
+
 
        *> EXPERIENCE
        01  EXPERIENCE-COUNT                PIC 9 VALUE ZERO.
@@ -111,6 +111,7 @@
        *> EDUCATION
        01  EDUCATION-COUNT                 PIC 9 VALUE ZERO.
        01  EDUCATION-INDEX                 PIC 9 VALUE ZERO.
+       01  EDUCATION-DONE                  PIC X VALUE "N".
 
        01  EDUCATION-TABLE OCCURS 3 TIMES.
            05 EDU-DEGREE                   PIC X(50).
@@ -548,36 +549,28 @@
 
             GET-ABOUT-ME.
                 MOVE SPACES TO PROFILE-ABOUT-ME
-                MOVE "N" TO ABOUT-ME-VALID
 
-                PERFORM UNTIL ABOUT-ME-VALID = "Y"
+                MOVE
+                    "Enter About Me (optional, max 200 chars, enter blank line to skip): "
+                    TO OUTPUT-LINE
+                PERFORM EMIT-LINE
 
-                    MOVE
-                        "Enter About Me (optional, max 200 chars, enter blank line to skip): "
-                        TO OUTPUT-LINE
-                    PERFORM EMIT-LINE
+                PERFORM READ-INPUT
+                IF NO-MORE-INPUT
+                    EXIT PARAGRAPH
+                END-IF
 
-                    PERFORM READ-INPUT
-                    IF NO-MORE-INPUT
-                        EXIT PARAGRAPH
-                    END-IF
+                IF FUNCTION LENGTH(
+                    FUNCTION TRIM(INPUT-VALUE)
+                ) > 200
 
-                    IF FUNCTION LENGTH(
-                        FUNCTION TRIM(INPUT-VALUE)
-                    ) > 200
+                    MOVE INPUT-VALUE(1:200)
+                        TO PROFILE-ABOUT-ME
 
-                        MOVE
-                            "About Me must be 200 characters or fewer."
-                            TO OUTPUT-LINE
-                        PERFORM EMIT-LINE
-
-                    ELSE
-                        MOVE FUNCTION TRIM(INPUT-VALUE)
-                            TO PROFILE-ABOUT-ME
-                        MOVE "Y" TO ABOUT-ME-VALID
-                    END-IF
-
-                END-PERFORM.
+                ELSE
+                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                        TO PROFILE-ABOUT-ME
+                END-IF.
                 
             GET-EXPERIENCE.
                 MOVE 0 TO EXPERIENCE-COUNT
@@ -697,8 +690,10 @@
 
             GET-EDUCATION.
                 MOVE 0 TO EDUCATION-COUNT
+                MOVE "N" TO EDUCATION-DONE
 
-                PERFORM UNTIL EDUCATION-COUNT = 3
+                PERFORM UNTIL EDUCATION-DONE = "Y"
+
                     MOVE "Education Degree (enter 'DONE' to finish): "
                         TO OUTPUT-LINE
                     PERFORM EMIT-LINE
@@ -709,57 +704,89 @@
                     END-IF
 
                     IF FUNCTION UPPER-CASE(FUNCTION TRIM(INPUT-VALUE)) = "DONE"
-                        EXIT PERFORM
-                    END-IF
+                        MOVE "Y" TO EDUCATION-DONE
 
-                    IF FUNCTION TRIM(INPUT-VALUE) = SPACES
-                        MOVE "Degree is required." TO OUTPUT-LINE
-                        PERFORM EMIT-LINE
                     ELSE
-                        ADD 1 TO EDUCATION-COUNT
-                        MOVE FUNCTION TRIM(INPUT-VALUE)
-                            TO EDU-DEGREE(EDUCATION-COUNT)
-
-                        MOVE SPACES TO EDU-UNIVERSITY(EDUCATION-COUNT)
-                        PERFORM UNTIL EDU-UNIVERSITY(EDUCATION-COUNT)
-                            NOT = SPACES
-
-                            MOVE "University/College: " TO OUTPUT-LINE
+                        IF FUNCTION TRIM(INPUT-VALUE) = SPACES
+                            MOVE "Degree is required."
+                                TO OUTPUT-LINE
                             PERFORM EMIT-LINE
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
 
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EDU-UNIVERSITY(EDUCATION-COUNT)
-
-                            IF EDU-UNIVERSITY(EDUCATION-COUNT) = SPACES
-                                MOVE "University/College is required."
+                        ELSE
+                            IF EDUCATION-COUNT = 3
+                                MOVE "Maximum of 3 education entries allowed."
                                     TO OUTPUT-LINE
                                 PERFORM EMIT-LINE
-                            END-IF
-                        END-PERFORM
+                                MOVE "Y" TO EDUCATION-DONE
 
-                        MOVE SPACES TO EDU-YEARS(EDUCATION-COUNT)
-                        PERFORM UNTIL EDU-YEARS(EDUCATION-COUNT) NOT = SPACES
-                            MOVE "Years Attended: " TO OUTPUT-LINE
-                            PERFORM EMIT-LINE
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
+                            ELSE
+                                ADD 1 TO EDUCATION-COUNT
 
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EDU-YEARS(EDUCATION-COUNT)
+                                MOVE FUNCTION TRIM(INPUT-VALUE)
+                                    TO EDU-DEGREE(EDUCATION-COUNT)
 
-                            IF EDU-YEARS(EDUCATION-COUNT) = SPACES
-                                MOVE "Years attended are required."
-                                    TO OUTPUT-LINE
-                                PERFORM EMIT-LINE
+                                MOVE SPACES
+                                    TO EDU-UNIVERSITY(EDUCATION-COUNT)
+
+                                PERFORM UNTIL
+                                    EDU-UNIVERSITY(EDUCATION-COUNT)
+                                    NOT = SPACES
+
+                                    MOVE "University/College: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
+
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EDU-UNIVERSITY(EDUCATION-COUNT)
+
+                                    IF EDU-UNIVERSITY(EDUCATION-COUNT)
+                                        = SPACES
+
+                                        MOVE "University/College is required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
+                                MOVE SPACES
+                                    TO EDU-YEARS(EDUCATION-COUNT)
+
+                                PERFORM UNTIL
+                                    EDU-YEARS(EDUCATION-COUNT)
+                                    NOT = SPACES
+
+                                    MOVE "Years Attended: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
+
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EDU-YEARS(EDUCATION-COUNT)
+
+                                    IF EDU-YEARS(EDUCATION-COUNT)
+                                        = SPACES
+
+                                        MOVE "Years attended are required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
                             END-IF
-                        END-PERFORM
+                        END-IF
                     END-IF
+
                 END-PERFORM.
 
             SAVE-PROFILE.
