@@ -1,0 +1,108 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s2_pos_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s2_pos_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Casey
+Enter Last Name:
+Morgan
+Enter University/College Attended:
+Lakeshore College
+Enter Major:
+Information Systems
+Enter Graduation Year (YYYY):
+2028
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Student interested in database design.
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Casey
+Enter Last Name:
+Morgan
+Enter University/College Attended:
+Lakeshore College
+Enter Major:
+Cybersecurity
+Enter Graduation Year (YYYY):
+2030
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Student focused on secure software and network defense.
+Experience Title (enter 'DONE' to finish):
+Security Intern
+Company/Organization:
+Blue Shield Labs
+Dates:
+Summer 2026
+Description (optional, blank to skip):
+Assisted with vulnerability assessments.
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+--- Your Profile ---
+Name: Casey Morgan
+University: Lakeshore College
+Major: Cybersecurity
+Graduation Year: 2030
+About Me:
+Student focused on secure software and network defense.
+Experience:
+Title: Security Intern
+Company: Blue Shield Labs
+Dates: Summer 2026
+Description: Assisted with vulnerability assessments.
+Education:
+None
+--------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

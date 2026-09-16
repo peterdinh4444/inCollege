@@ -1,0 +1,72 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s4_pos_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s4_pos_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Riley
+Enter Last Name:
+Chen
+Enter University/College Attended:
+Summit Technical University
+Enter Major:
+Software Engineering
+Enter Graduation Year (YYYY):
+2031
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+--- Your Profile ---
+Name: Riley Chen
+University: Summit Technical University
+Major: Software Engineering
+Graduation Year: 2031
+About Me:
+
+Experience:
+None
+Education:
+None
+--------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

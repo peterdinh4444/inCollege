@@ -1,0 +1,43 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s8_pos_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+--- Your Profile ---
+Name: Jamie Williams
+University: Redwood University
+Major: Political Science
+Graduation Year: 2028
+About Me:
+Student interested in public policy and community service.
+Experience:
+Title: Policy Intern
+Company: City Council Office
+Dates: Summer 2025
+Description: Researched local housing policy proposals.
+Education:
+Degree: Bachelor of Arts in Political Science
+University: Redwood University
+Years: 2024-2028
+--------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

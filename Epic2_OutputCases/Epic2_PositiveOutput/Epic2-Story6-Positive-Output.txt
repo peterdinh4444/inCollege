@@ -1,0 +1,95 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s6_pos_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s6_pos_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Morgan
+Enter Last Name:
+Reed
+Enter University/College Attended:
+Central City College
+Enter Major:
+Marketing
+Enter Graduation Year (YYYY):
+2029
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Marketing student with experience in digital campaigns.
+Experience Title (enter 'DONE' to finish):
+Marketing Intern
+Company/Organization:
+BrightPath Media
+Dates:
+Summer 2025
+Description (optional, blank to skip):
+Prepared weekly campaign performance reports.
+Experience Title (enter 'DONE' to finish):
+Campus Ambassador
+Company/Organization:
+Central City College
+Dates:
+2024-2025
+Description (optional, blank to skip):
+Represented the college at student recruitment events.
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+--- Your Profile ---
+Name: Morgan Reed
+University: Central City College
+Major: Marketing
+Graduation Year: 2029
+About Me:
+Marketing student with experience in digital campaigns.
+Experience:
+Title: Marketing Intern
+Company: BrightPath Media
+Dates: Summer 2025
+Description: Prepared weekly campaign performance reports.
+Title: Campus Ambassador
+Company: Central City College
+Dates: 2024-2025
+Description: Represented the college at student recruitment events.
+Education:
+None
+--------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

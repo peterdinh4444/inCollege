@@ -1,0 +1,72 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s1_pos_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s1_pos_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Jordan
+Enter Last Name:
+Lee
+Enter University/College Attended:
+North Valley University
+Enter Major:
+Computer Science
+Enter Graduation Year (YYYY):
+2029
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+--- Your Profile ---
+Name: Jordan Lee
+University: North Valley University
+Major: Computer Science
+Graduation Year: 2029
+About Me:
+
+Experience:
+None
+Education:
+None
+--------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

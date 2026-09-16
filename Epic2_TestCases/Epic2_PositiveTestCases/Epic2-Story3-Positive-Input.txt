@@ -1,0 +1,24 @@
+2
+s3_pos_acct
+TestPass1!
+1
+s3_pos_acct
+TestPass1!
+1
+Avery
+Patel
+Coastal State University
+Data Science
+2027
+Data science student who enjoys applied analytics.
+Data Analyst Intern
+Harbor Analytics
+Summer 2025
+Created dashboards for operational metrics.
+DONE
+Bachelor of Science in Data Science
+Coastal State University
+2023-2027
+DONE
+2
+Logout
