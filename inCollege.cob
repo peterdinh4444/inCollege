@@ -99,6 +99,7 @@
        *> EXPERIENCE
        01  EXPERIENCE-COUNT                PIC 9 VALUE ZERO.
        01  EXPERIENCE-INDEX                PIC 9 VALUE ZERO.
+       01  EXPERIENCE-DONE                 PIC X VALUE "N".
 
        01  EXPERIENCE-TABLE OCCURS 3 TIMES.
            05 EXP-TITLE                    PIC X(50).
@@ -561,8 +562,9 @@
                 
             GET-EXPERIENCE.
                 MOVE 0 TO EXPERIENCE-COUNT
+                MOVE "N" TO EXPERIENCE-DONE
 
-                PERFORM UNTIL EXPERIENCE-COUNT = 3
+                PERFORM UNTIL EXPERIENCE-DONE = "Y"
 
                     MOVE "Experience Title (enter 'DONE' to finish): "
                         TO OUTPUT-LINE
@@ -574,73 +576,102 @@
                     END-IF
 
                     IF FUNCTION UPPER-CASE(FUNCTION TRIM(INPUT-VALUE)) = "DONE"
-                        EXIT PERFORM
-                    END-IF
+                        MOVE "Y" TO EXPERIENCE-DONE
 
-                    IF FUNCTION TRIM(INPUT-VALUE) = SPACES
-                        MOVE "Experience title is required." TO OUTPUT-LINE
-                        PERFORM EMIT-LINE
                     ELSE
-                        ADD 1 TO EXPERIENCE-COUNT
-
-                        MOVE FUNCTION TRIM(INPUT-VALUE)
-                            TO EXP-TITLE(EXPERIENCE-COUNT)
-
-                        MOVE SPACES TO EXP-COMPANY(EXPERIENCE-COUNT)
-
-                        PERFORM UNTIL EXP-COMPANY(EXPERIENCE-COUNT) NOT = SPACES
-
-                            MOVE "Company/Organization: " TO OUTPUT-LINE
+                        IF FUNCTION TRIM(INPUT-VALUE) = SPACES
+                            MOVE "Experience title is required."
+                                TO OUTPUT-LINE
                             PERFORM EMIT-LINE
 
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
-
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EXP-COMPANY(EXPERIENCE-COUNT)
-
-                            IF EXP-COMPANY(EXPERIENCE-COUNT) = SPACES
-                                MOVE "Company/Organization is required."
+                        ELSE
+                            IF EXPERIENCE-COUNT = 3
+                                MOVE "Maximum of 3 experience entries allowed."
                                     TO OUTPUT-LINE
                                 PERFORM EMIT-LINE
-                            END-IF
-                        END-PERFORM
 
-                        MOVE SPACES TO EXP-DATES(EXPERIENCE-COUNT)
+                            ELSE
+                                ADD 1 TO EXPERIENCE-COUNT
 
-                        PERFORM UNTIL EXP-DATES(EXPERIENCE-COUNT) NOT = SPACES
+                                MOVE FUNCTION TRIM(INPUT-VALUE)
+                                    TO EXP-TITLE(EXPERIENCE-COUNT)
 
-                            MOVE "Dates: " TO OUTPUT-LINE
-                            PERFORM EMIT-LINE
+                                MOVE SPACES
+                                    TO EXP-COMPANY(EXPERIENCE-COUNT)
 
-                            PERFORM READ-INPUT
-                            IF NO-MORE-INPUT
-                                EXIT PARAGRAPH
-                            END-IF
+                                PERFORM UNTIL
+                                    EXP-COMPANY(EXPERIENCE-COUNT)
+                                    NOT = SPACES
 
-                            MOVE FUNCTION TRIM(INPUT-VALUE)
-                                TO EXP-DATES(EXPERIENCE-COUNT)
+                                    MOVE "Company/Organization: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
 
-                            IF EXP-DATES(EXPERIENCE-COUNT) = SPACES
-                                MOVE "Dates are required." TO OUTPUT-LINE
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EXP-COMPANY(EXPERIENCE-COUNT)
+
+                                    IF EXP-COMPANY(EXPERIENCE-COUNT)
+                                        = SPACES
+
+                                        MOVE
+                                            "Company/Organization is required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
+                                MOVE SPACES
+                                    TO EXP-DATES(EXPERIENCE-COUNT)
+
+                                PERFORM UNTIL
+                                    EXP-DATES(EXPERIENCE-COUNT)
+                                    NOT = SPACES
+
+                                    MOVE "Dates: "
+                                        TO OUTPUT-LINE
+                                    PERFORM EMIT-LINE
+
+                                    PERFORM READ-INPUT
+                                    IF NO-MORE-INPUT
+                                        EXIT PARAGRAPH
+                                    END-IF
+
+                                    MOVE FUNCTION TRIM(INPUT-VALUE)
+                                        TO EXP-DATES(EXPERIENCE-COUNT)
+
+                                    IF EXP-DATES(EXPERIENCE-COUNT)
+                                        = SPACES
+
+                                        MOVE "Dates are required."
+                                            TO OUTPUT-LINE
+                                        PERFORM EMIT-LINE
+                                    END-IF
+
+                                END-PERFORM
+
+                                MOVE
+                                    "Description (optional, blank to skip): "
+                                    TO OUTPUT-LINE
                                 PERFORM EMIT-LINE
+
+                                PERFORM READ-INPUT
+                                IF NO-MORE-INPUT
+                                    EXIT PARAGRAPH
+                                END-IF
+
+                                MOVE FUNCTION TRIM(INPUT-VALUE)
+                                    TO EXP-DESCRIPTION(
+                                        EXPERIENCE-COUNT
+                                    )
+
                             END-IF
-                        END-PERFORM
-
-                        MOVE "Description (optional, blank to skip): "
-                            TO OUTPUT-LINE
-                        PERFORM EMIT-LINE
-
-                        PERFORM READ-INPUT
-                        IF NO-MORE-INPUT
-                            EXIT PARAGRAPH
                         END-IF
-
-                        MOVE FUNCTION TRIM(INPUT-VALUE)
-                            TO EXP-DESCRIPTION(EXPERIENCE-COUNT)
-
                     END-IF
 
                 END-PERFORM.
