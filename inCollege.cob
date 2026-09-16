@@ -17,10 +17,10 @@
        DATA DIVISION.
        FILE SECTION.
        FD  INPUT-FILE.
-       01  INPUT-RECORD                    PIC X(200).
+       01  INPUT-RECORD                    PIC X(500).
 
        FD  OUTPUT-FILE.
-       01  OUTPUT-RECORD                   PIC X(200).
+       01  OUTPUT-RECORD                   PIC X(500).
 
        FD  ACCOUNT-FILE.
        01  ACCOUNT-RECORD.
@@ -56,8 +56,8 @@
            88 NO-MORE-INPUT                      VALUE "Y".
        01  PROFILE-EOF                     PIC X VALUE "N".
 
-       01  INPUT-VALUE                     PIC X(200).
-       01  OUTPUT-LINE                     PIC X(200).
+       01  INPUT-VALUE                     PIC X(500).
+       01  OUTPUT-LINE                     PIC X(500).
        01  CHOICE                          PIC X(20).
 
        *> ACCOUNT / LOGIN VARIABLES
@@ -95,6 +95,7 @@
        01  GRAD-YEAR-VALID                 PIC X VALUE "N".
        01  GRAD-YEAR-LENGTH                PIC 9(3) VALUE ZERO.
        01  GRAD-YEAR-INPUT                 PIC X(4).
+       01  ABOUT-ME-VALID                  PIC X VALUE "N".
 
        *> EXPERIENCE
        01  EXPERIENCE-COUNT                PIC 9 VALUE ZERO.
@@ -547,18 +548,36 @@
 
             GET-ABOUT-ME.
                 MOVE SPACES TO PROFILE-ABOUT-ME
+                MOVE "N" TO ABOUT-ME-VALID
 
-                MOVE "Enter About Me (optional, max 200 chars, enter blank line to skip): "
-                    TO OUTPUT-LINE
-                PERFORM EMIT-LINE
+                PERFORM UNTIL ABOUT-ME-VALID = "Y"
 
-                PERFORM READ-INPUT
-                IF NO-MORE-INPUT
-                    EXIT PARAGRAPH
-                END-IF
+                    MOVE
+                        "Enter About Me (optional, max 200 chars, enter blank line to skip): "
+                        TO OUTPUT-LINE
+                    PERFORM EMIT-LINE
 
-                MOVE FUNCTION TRIM(INPUT-VALUE)
-                    TO PROFILE-ABOUT-ME.
+                    PERFORM READ-INPUT
+                    IF NO-MORE-INPUT
+                        EXIT PARAGRAPH
+                    END-IF
+
+                    IF FUNCTION LENGTH(
+                        FUNCTION TRIM(INPUT-VALUE)
+                    ) > 200
+
+                        MOVE
+                            "About Me must be 200 characters or fewer."
+                            TO OUTPUT-LINE
+                        PERFORM EMIT-LINE
+
+                    ELSE
+                        MOVE FUNCTION TRIM(INPUT-VALUE)
+                            TO PROFILE-ABOUT-ME
+                        MOVE "Y" TO ABOUT-ME-VALID
+                    END-IF
+
+                END-PERFORM.
                 
             GET-EXPERIENCE.
                 MOVE 0 TO EXPERIENCE-COUNT
