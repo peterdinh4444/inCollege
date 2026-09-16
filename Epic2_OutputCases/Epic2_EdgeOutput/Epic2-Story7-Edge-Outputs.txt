@@ -1,0 +1,86 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s7_edge_acct
+Please enter your password:
+TestPass1!
+That username is already in use.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s7_edge_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Imani
+Enter Last Name:
+Delacroix
+Enter University/College Attended:
+Rosewood University
+Enter Major:
+Biology
+Enter Graduation Year (YYYY):
+2030
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Pre-med student with a focus on molecular biology.
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+Bachelor of Science in Biology
+University/College:
+Rosewood University
+Years Attended:
+2026-2030
+Education Degree (enter 'DONE' to finish):
+Associate of Science
+University/College:
+Bayview Community College
+Years Attended:
+2024-2026
+Education Degree (enter 'DONE' to finish):
+Certificate in Laboratory Techniques
+University/College:
+Thornwood Technical Institute
+Years Attended:
+2023
+Unable to save profile.
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Unwanted Fourth Degree
+Invalid Choice
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+No profile has been created yet.
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

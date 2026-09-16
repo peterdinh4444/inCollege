@@ -1,0 +1,17 @@
+2
+s5_neg_acct
+TestPass1!
+1
+s5_neg_acct
+TestPass1!
+1
+Grant
+Ibarra
+Meridian State University
+Finance
+2028
+This description is intentionally written to exceed the two hundred character limit for the About Me field so the team can verify how the system behaves when a user submits more text than the field was designed to store, whether it truncates or causes any errors.
+DONE
+DONE
+2
+Logout

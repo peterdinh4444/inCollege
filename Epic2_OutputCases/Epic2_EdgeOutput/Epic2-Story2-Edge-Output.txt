@@ -1,0 +1,138 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s2_edge_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s2_edge_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Talia
+Enter Last Name:
+Brennan
+Enter University/College Attended:
+Pinecrest University
+Enter Major:
+Environmental Science
+Enter Graduation Year (YYYY):
+2026
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+
+Experience Title (enter 'DONE' to finish):
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Talia
+Enter Last Name:
+Brennan
+Enter University/College Attended:
+Pinecrest University
+Enter Major:
+Environmental Science
+Enter Graduation Year (YYYY):
+2026
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+
+Experience Title (enter 'DONE' to finish):
+Sustainability Intern
+Company/Organization:
+Greenway Conservation Trust
+Dates:
+Summer 2023
+Description (optional, blank to skip):
+Conducted field surveys of local wetland restoration sites.
+Experience Title (enter 'DONE' to finish):
+Lab Assistant
+Company/Organization:
+Pinecrest University
+Dates:
+Fall 2022 - Spring 2023
+Description (optional, blank to skip):
+Processed soil samples for a departmental research project.
+Experience Title (enter 'DONE' to finish):
+Volunteer Coordinator
+Company/Organization:
+Riverbend Cleanup Initiative
+Dates:
+2021-2022
+Description (optional, blank to skip):
+Organized community volunteers for quarterly river cleanup events.
+Education Degree (enter 'DONE' to finish):
+Unwanted Fourth Role
+University/College:
+DONE
+Years Attended:
+DONE
+Education Degree (enter 'DONE' to finish):
+DONE
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+2
+--- Your Profile ---
+Name: Talia Brennan
+University: Pinecrest University
+Major: Environmental Science
+Graduation Year: 2026
+About Me:
+
+Experience:
+Title: Sustainability Intern
+Company: Greenway Conservation Trust
+Dates: Summer 2023
+Description: Conducted field surveys of local wetland restoration sites.
+Title: Lab Assistant
+Company: Pinecrest University
+Dates: Fall 2022 - Spring 2023
+Description: Processed soil samples for a departmental research project.
+Title: Volunteer Coordinator
+Company: Riverbend Cleanup Initiative
+Dates: 2021-2022
+Description: Organized community volunteers for quarterly river cleanup events.
+Education:
+Degree: Unwanted Fourth Role
+University: DONE
+Years: DONE
+--------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+Logout

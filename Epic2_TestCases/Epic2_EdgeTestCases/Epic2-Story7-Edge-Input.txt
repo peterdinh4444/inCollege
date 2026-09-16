@@ -1,0 +1,26 @@
+2
+s7_edge_acct
+TestPass1!
+1
+s7_edge_acct
+TestPass1!
+1
+Imani
+Delacroix
+Rosewood University
+Biology
+2030
+Pre-med student with a focus on molecular biology.
+DONE
+Bachelor of Science in Biology
+Rosewood University
+2026-2030
+Associate of Science
+Bayview Community College
+2024-2026
+Certificate in Laboratory Techniques
+Thornwood Technical Institute
+2023
+Unwanted Fourth Degree
+2
+Logout

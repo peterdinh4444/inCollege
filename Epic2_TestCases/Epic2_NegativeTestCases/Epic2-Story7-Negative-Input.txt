@@ -1,0 +1,23 @@
+2
+s7_neg_acct
+TestPass1!
+1
+s7_neg_acct
+TestPass1!
+1
+Wesley
+Okafor
+Thornwood University
+Chemistry
+2029
+
+DONE
+
+Bachelor of Science in Chemistry
+
+Thornwood University
+
+2025-2029
+DONE
+2
+Logout

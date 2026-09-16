@@ -1,0 +1,52 @@
+Welcome to InCollege!
+Log In
+Create New Account
+Enter your choice:
+2
+Please enter your username:
+s5_neg_acct
+Please enter your password:
+TestPass1!
+Account created successfully.
+Log In
+Create New Account
+Enter your choice:
+1
+Please enter your username:
+s5_neg_acct
+Please enter your password:
+TestPass1!
+You have successfully logged in
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Logout
+Enter your choice:
+1
+Enter First Name:
+Grant
+Enter Last Name:
+Ibarra
+Enter University/College Attended:
+Meridian State University
+Enter Major:
+Finance
+Enter Graduation Year (YYYY):
+2028
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+This description is intentionally written to exceed the two hundred character limit for the About Me field so the team can verify how the system behaves when a user submits more text than the field wa
+Experience Title (enter 'DONE' to finish):
+ld was designed to store, whether it truncates or causes any errors.
+Company/Organization:
+DONE
+Dates:
+DONE
+Description (optional, blank to skip):
+2
+Experience Title (enter 'DONE' to finish):
+Logout
+Company/Organization:
+Education Degree (enter 'DONE' to finish):
+Unable to save profile.
